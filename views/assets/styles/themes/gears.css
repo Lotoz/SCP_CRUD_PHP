@@ -1,0 +1,136 @@
+/* gears.css - Tema Predeterminado (Clínico/Burocrático) */
+
+:root {
+  --bg-color: #f4f4f4;
+  --card-bg: #ffffff;
+  --text-color: #333333;
+  --accent-color: #444444; /* Gris oscuro */
+  --highlight-color: #000000;
+  --alert-color: #8b0000;
+  --font-main: "Roboto", sans-serif;
+  --font-mono: "Share Tech Mono", monospace;
+  --border-radius: 2px;
+  --nav-bg: #222;
+  --nav-text: #fff;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* Header & Nav */
+header {
+  background-color: var(--nav-bg);
+  padding: 1rem;
+  border-bottom: 5px solid var(--accent-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.scp-logo {
+  height: 60px;
+  filter: invert(1); /* Invierte a blanco si el logo es negro */
+  margin-right: 15px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+}
+
+.security-level {
+  font-family: var(--font-mono);
+  color: var(--nav-text);
+  font-size: 0.9rem;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  padding: 0;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--nav-text);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  color: #ccc;
+  text-decoration: underline;
+}
+
+/* Main Layout */
+main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.msgUser {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-left: 10px solid var(--accent-color);
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.msgUser h1 {
+  font-family: var(--font-mono);
+  margin-top: 0;
+  color: var(--highlight-color);
+}
+
+/* Grid Dashboard */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border-radius: var(--border-radius);
+}
+
+.card h2 {
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0.5rem;
+  font-family: var(--font-mono);
+}
+
+.redacted {
+  background-color: #000;
+  color: #000;
+  cursor: help;
+}
+
+.redacted:hover {
+  color: #fff;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--nav-bg);
+  color: #777;
+  margin-top: 2rem;
+  font-family: var(--font-mono);
+  border-top: 5px solid var(--accent-color);
+}

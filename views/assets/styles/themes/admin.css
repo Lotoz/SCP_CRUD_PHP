@@ -1,0 +1,45 @@
+/* admin.css - Tema O5 Council (Acceso Total) */
+
+@import url("gears.css");
+
+:root {
+  --bg-color: #0a0a0a;
+  --card-bg: #1c1c1c;
+  --text-color: #e0e0e0;
+  --accent-color: #8a0000; 
+  --highlight-color: #ff0000; 
+  --alert-color: #ff3333;
+  --nav-bg: #000000;
+  --nav-text: #ff0000;
+  --border-radius: 0px; 
+}
+
+body {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    #111 1px,
+    #111 2px
+  ); 
+}
+
+.scp-logo svg {
+  color: #8a0000;
+}
+
+.msgUser,
+.card {
+  border: 1px solid var(--accent-color);
+  box-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
+}
+
+nav a:hover {
+  color: #fff;
+  text-shadow: 0 0 5px red;
+}
+
+.redacted {
+  background-color: #fff; 
+  color: #fff;
+}

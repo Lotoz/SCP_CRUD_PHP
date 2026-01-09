@@ -1,0 +1,32 @@
+/* sophie.css - Tema Dra. Sophie (Pastel/Calmado) */
+@import url("gears.css");
+
+:root {
+  --bg-color: #fdf5e6; /* Old Lace */
+  --card-bg: #fff0f5; /* Lavender Blush */
+  --text-color: #555;
+  --accent-color: #b0c4de; /* Light Steel Blue */
+  --highlight-color: #dda0dd; /* Plum */
+  --nav-bg: #ffb7b2; /* Pastel Red/Pink */
+  --nav-text: #fff;
+  --border-radius: 8px;
+}
+
+.scp-logo {
+  opacity: 0.6; /* Menos agresivo */
+}
+
+header {
+  background-color: var(--nav-bg);
+  border-bottom: 4px solid #ffdac1; /* Pastel Orange */
+}
+
+.card h2 {
+  color: #888;
+  border-bottom: 2px dashed var(--highlight-color);
+}
+
+.msgUser {
+  background-color: #e2f0cb; /* Pastel Green */
+  border-left: 10px solid #b5ead7; /* Mint */
+}

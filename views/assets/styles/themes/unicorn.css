@@ -1,0 +1,51 @@
+/* bright.css - Tema Dr. Bright (Caótico/Pastel Neón) */
+@import url("gears.css");
+
+:root {
+  --bg-color: #ffefff;
+  --card-bg: #ffffff;
+  --text-color: #2a2a2a;
+  --accent-color: #ff00ff;
+  --highlight-color: #00ffff; 
+  --nav-bg: #ff69b4; 
+  --nav-text: #fff;
+  --border-radius: 15px;
+}
+
+body {
+  background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+}
+
+.scp-logo {
+  filter: hue-rotate(180deg);
+}
+
+header {
+  background: linear-gradient(
+    90deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #9400d3
+  );
+  border-bottom: none;
+}
+
+nav a {
+  font-weight: 900;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.card {
+  border: 3px solid var(--highlight-color);
+  box-shadow: 5px 5px 0px var(--accent-color); 
+}
+
+.msgUser h1 {
+  color: #ff1493;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}

@@ -1,0 +1,31 @@
+/* clef.css - Tema Alto Clef (Naturaleza/Caos) */
+@import url("gears.css");
+
+:root {
+  --bg-color: #2e2b26; /* Marrón oscuro */
+  --card-bg: #e6dfcc; /* Papel viejo */
+  --text-color: #3e3832;
+  --accent-color: #556b2f; /* Verde oliva oscuro */
+  --highlight-color: #8b4513; /* Marrón silla de montar */
+  --nav-bg: #3d3630;
+  --nav-text: #d4c5a9;
+  --font-mono: "Courier New", monospace; /* Más estilo máquina de escribir vieja */
+}
+
+.scp-logo {
+  filter: sepia(100%) hue-rotate(50deg) saturate(300%); /* Tono verdoso/amarillento */
+}
+
+.msgUser {
+  background-color: #dcb35c; /* Hoja de otoño */
+  border-left: 10px solid #556b2f;
+}
+
+/* Añadir textura de "suciedad" o papel */
+body {
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMmUyYjI2Ii8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMzZTM4MzIiLz4KPC9zdmc+");
+}
+
+.card {
+  border-top: 5px solid #d2691e; /* Naranja chocolate */
+}
