@@ -19,8 +19,9 @@
         <nav>
             <ul>
                 <li><a href="#">Pending Tasks</a></li>
-                <li><a href="#">SCP Logs</a></li>
+                <li><a href="#">SCP Wiki</a></li>
                 <li><a href="#">Personal Notes</a></li>
+                <!--Database.php solo se muestra si es nivel 5 o mas-->
                 <li><a href="#">Database</a></li>
                 <li><a href="index.php?action=logout" style="color: #ff4444;">[LOG OUT]</a></li>
             </ul>
@@ -29,7 +30,7 @@
 
     <main>
         <div class="msgUser container">
-            <h1>Welcome, <span class="user-name"><?php echo $_SESSION['nombre'] ?? 'Agent'; ?></span></h1>
+            <h1>Welcome, <span class="user-name"><?php echo $_SESSION['name'] ?? 'Agent'; ?></span></h1>
             <p>Remember to log off. The Foundation is watching. <br>
                 <strong>WARNING:</strong> Unauthorized access will be monitored and terminated.
             </p>
@@ -62,4 +63,5 @@
         <small>© SCP Foundation</small>
     </footer>
 </body>
+
 </html>

@@ -7,34 +7,34 @@
 class User
 {
     private $id;
-    private $nombre;
-    private $apellido;
+    private $name;
+    private $lastname;
     private $email;
     private $password;
     private $level;
     private $rol;
     private $theme;
-    private $intentosFallidos;
-    private $activo;
-    private $fechaCreacion;
+    private $tryAttempts;
+    private $state;
+    private $creationDate;
 
 
     /**
      * Constructor
      */
-    public function __construct($id = null, $nombre = '', $apellido = '', $email = '', $password = '', $level = null, $rol = '', $theme = 'gears')
+    public function __construct($id = null, $name = '', $lastname = '', $email = '', $password = '', $level = null, $rol = '', $theme = 'gears')
     {
         $this->id = $id;
-        $this->nombre = $nombre;
-        $this->apellido = $apellido;
+        $this->name = $name;
+        $this->lastname = $lastname;
         $this->email = $email;
         $this->password = $password;
         $this->level = $level;
         $this->rol = $rol;
         $this->theme = $theme;
-        $this->intentosFallidos = 0;
-        $this->activo = false;
-        $this->fechaCreacion = date('Y-m-d H:i:s');
+        $this->tryAttempts = 0;
+        $this->state = false;
+        $this->creationDate = date('Y-m-d H:i:s');
     }
 
     // ==================== GETTERS ====================
@@ -44,19 +44,19 @@ class User
         return $this->id;
     }
 
-    public function getNombre()
+    public function getname()
     {
-        return $this->nombre;
+        return $this->name;
     }
 
-    public function getApellido()
+    public function getlastname()
     {
-        return $this->apellido;
+        return $this->lastname;
     }
 
-    public function getNombreCompleto()
+    public function getFullName()
     {
-        return $this->nombre . ' ' . $this->apellido;
+        return $this->name . ' ' . $this->lastname;
     }
 
     public function getEmail()
@@ -83,19 +83,19 @@ class User
         return $this->theme;
     }
 
-    public function getIntentosFallidos()
+    public function gettryAttempts()
     {
-        return $this->intentosFallidos;
+        return $this->tryAttempts;
     }
 
-    public function isActivo()
+    public function isstate()
     {
-        return $this->activo;
+        return $this->state;
     }
 
-    public function getFechaCreacion()
+    public function getcreationDate()
     {
-        return $this->fechaCreacion;
+        return $this->creationDate;
     }
 
     // ==================== SETTERS ====================
@@ -105,14 +105,14 @@ class User
         $this->id = $id;
     }
 
-    public function setNombre($nombre)
+    public function setname($name)
     {
-        $this->nombre = $nombre;
+        $this->name = $name;
     }
 
-    public function setApellido($apellido)
+    public function setlastname($lastname)
     {
-        $this->apellido = $apellido;
+        $this->lastname = $lastname;
     }
 
     public function setEmail($email)
@@ -139,19 +139,19 @@ class User
         $this->theme = $theme;
     }
 
-    public function setIntentosFallidos($intentos)
+    public function settryAttempts($intentos)
     {
-        $this->intentosFallidos = $intentos;
+        $this->tryAttempts  = $intentos;
     }
 
-    public function setActivo($activo)
+    public function setstate($state)
     {
-        $this->activo = $activo;
+        $this->state = $state;
     }
 
-    public function setFechaCreacion($fecha)
+    public function setcreationDate($fecha)
     {
-        $this->fechaCreacion = $fecha;
+        $this->creationDate = $fecha;
     }
 
 

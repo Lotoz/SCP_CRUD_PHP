@@ -4,8 +4,8 @@
 document.getElementById('register-form').addEventListener('submit', function (e) {
     // --- INPUTS ---
     const idInput = document.getElementById('id');
-    const nameInput = document.getElementById('nombre');
-    const lastNameInput = document.getElementById('apellido');
+    const nameInput = document.getElementById('name');
+    const lastNameInput = document.getElementById('lastname');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirm_password');

@@ -29,25 +29,25 @@ USE `scp_data`;
 -- Estructura de tabla para la tabla `users`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS  `users` (
   `id` varchar(25) NOT NULL,
   `password` varchar(250) NOT NULL,
-  `nombre` varchar(70) NOT NULL,
-  `apellido` varchar(70) NOT NULL,
+  `name` varchar(70) NOT NULL,
+  `lastname` varchar(70) NOT NULL,
   `email` varchar(50) NOT NULL,
   `rol` varchar(60) NOT NULL,
   `level` int(2) NOT NULL DEFAULT 1,
   `theme` varchar(60) NOT NULL DEFAULT 'gears',
-  `intentosFallidos` int(2) NOT NULL DEFAULT 0,
-  `activo` tinyint(1) NOT NULL DEFAULT 0,
-  `fechaCreacion` date NOT NULL
+  `tryAttempts` int(2) NOT NULL DEFAULT 0,
+  `state` tinyint(1) NOT NULL DEFAULT 0,
+  `creationDate` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `password`, `nombre`, `apellido`, `email`, `rol`, `level`, `theme`, `intentosFallidos`, `activo`, `fechaCreacion`) VALUES
+INSERT INTO `users` (`id`, `password`, `name`, `lastname`, `email`, `rol`, `level`, `theme`, `tryAttempts`, `state`, `creationDate`) VALUES
 ('Afton', '$2y$10$0RkS08Ar5f/rdQceioubReKHSQqf585nmx3.f.nNCoZyTKSB/QOga', 'William', 'Afton', 'afton@scp.com', 'cleaner', 1, 'unicorn', 0, 1, '2025-12-19'),
 ('Alto_clef', '$2y$10$YERfqb/FAx2QeFWzW1X0a.NWdI8iaeC3JLVccneu3/ew/kT2cKtaO', 'Francis', 'Wojcienchowski', 'alto.clef@scp.com', 'scienct', 3, 'clef', 0, 1, '2025-12-19'),
 ('breenaIce', '$2y$10$VJhuLlEtxafg0ljtsCNlzeoMnXT50CBuJVwRz.EvxWerMLq24dymS', 'Breena', 'Icefrost', 'breena.icefrost@scp.com', 'scienct', 4, 'ice', 0, 1, '2025-12-19'),
@@ -78,34 +78,33 @@ GRANT ALL PRIVILEGES ON `scp_data`.* TO `view`@`%`;
 FLUSH PRIVILEGES;
 
 -- Nueva implementacion 
--- 1. Tabla EX-EMPLEADOS (Historial de usuarios borrados)
--- Guardará a los usuarios borrados. Usamos varchar(25) para el ID.
+-- Tabla EX-EMPLEADOS (Historial de usuarios borrados)
+-- Guardará a los usuarios borrados. Usamos int para el id, porque no queremos guardar su id antiguo, solo es una base log, se guardan por seguridad de la organizacion
 CREATE TABLE IF NOT EXISTS `ex_empleados` (
-    `id` varchar(25) NOT NULL,
-    `nombre` varchar(70),
-    `apellido` varchar(70),
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` varchar(70),
+    `lastname` varchar(70),
     `rol` varchar(60),
     `level` int(2),
-    `fecha_eliminacion` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`)
+    `fecha_eliminacion` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
--- 2. Tabla SITIO
+-- Tabla SITIO
 -- El administrador se vincula a users(id) que es varchar(25)
 CREATE TABLE IF NOT EXISTS `sitio` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `nombre_sitio` VARCHAR(100) NOT NULL,
+    `name_sitio` VARCHAR(100) NOT NULL,
     `ubicacion` TEXT,
     `id_administrador` VARCHAR(25),
     INDEX (`id_administrador`),
     CONSTRAINT `fk_sitio_admin` FOREIGN KEY (`id_administrador`) REFERENCES `users`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
--- 3. Tabla SCP (Las Anomalías)
+-- Tabla SCP (Las Anomalías)
 CREATE TABLE IF NOT EXISTS `scp` (
-    `id` VARCHAR(20) PRIMARY KEY, -- Ej: 'SCP-173'
+    `id` VARCHAR(20) PRIMARY KEY,
     `apodo` VARCHAR(100),
-    `class` ENUM('Keter', 'Euclid', 'Safe', 'Apollyn', 'CognitoPeligroso', 'Anulado') NOT NULL,
+    `class` VARCHAR(255) NOT NULL,
     `contencion` TEXT,
     `descripcion` TEXT,
     `doc_extensa` VARCHAR(255),
@@ -114,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `scp` (
     CONSTRAINT `fk_scp_sitio` FOREIGN KEY (`id_sitio`) REFERENCES `sitio`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
--- 4. Tabla TAREAS ASIGNADAS
+-- Tabla TAREAS ASIGNADAS
 -- Vinculada al usuario que debe realizarla
 CREATE TABLE IF NOT EXISTS `tareas` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -125,12 +124,12 @@ CREATE TABLE IF NOT EXISTS `tareas` (
     CONSTRAINT `fk_tarea_user` FOREIGN KEY (`id_usuario`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
--- 5. Tabla N:M PERSONAL_ASIGNADO
+-- Tabla N:M PERSONAL_ASIGNADO
 -- Quién cuida a qué SCP. Vincula users(id) con scp(id)
 CREATE TABLE IF NOT EXISTS `personal_asignado` (
     `id_usuario` VARCHAR(25) NOT NULL,
     `id_scp` VARCHAR(20) NOT NULL,
-    `rol_anomalia` VARCHAR(50), -- Ej: 'Investigador Jefe'
+    `rol_anomalia` VARCHAR(50),
     PRIMARY KEY (`id_usuario`, `id_scp`),
     CONSTRAINT `fk_pa_user` FOREIGN KEY (`id_usuario`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_pa_scp` FOREIGN KEY (`id_scp`) REFERENCES `scp`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
@@ -140,28 +139,22 @@ CREATE TABLE IF NOT EXISTS `personal_asignado` (
 -- LOGICA AUTOMÁTICA (TRIGGERS Y VISTAS) -> Quita carga al servidor de php y es un trabajo que debe hacer la base de datos
 -- --------------------------------------------------------
 
--- A. Trigger para Ex-Empleados
+-- Trigger para Ex-Empleados
 -- Si borras a alguien de 'users', se guarda aquí automáticamente.
 DROP TRIGGER IF EXISTS `before_user_delete`;
-DELIMITER //
-CREATE TRIGGER `before_user_delete`
-BEFORE DELETE ON `users`
-FOR EACH ROW
-BEGIN
-    INSERT INTO `ex_empleados` (id, nombre, apellido, rol, level, fecha_eliminacion)
-    VALUES (OLD.id, OLD.nombre, OLD.apellido, OLD.rol, OLD.level, NOW());
-END;
-//
-DELIMITER ;
+CREATE TRIGGER `before_user_delete` BEFORE DELETE ON `users`
+FOR EACH ROW INSERT INTO `ex_empleados` (name, lastname, rol, level, fecha_eliminacion)
+VALUES ( OLD.name,OLD.lastname, OLD.rol, OLD.level, NOW());
 
--- B. Vista de Detalles del Sitio (Cálculo automático de personal)
+
+-- Vista de Detalles del Sitio (Cálculo automático de personal)
 -- Te dice cuántos empleados únicos están asignados a SCPs dentro de un sitio
 -- Sirve para ahorrar consultas a la base de datos
 CREATE OR REPLACE VIEW `vista_sitio_detalles` AS
 SELECT 
     s.id AS Sitio_ID,
-    s.nombre_sitio,
-    CONCAT(u.nombre, ' ', u.apellido) AS Administrador,
+    s.namee_sitio,
+    CONCAT(u.name, ' ', u.lastname) AS Administrador,
     COUNT(DISTINCT pa.id_usuario) AS Total_Personal_Asignado
 FROM `sitio` s
 LEFT JOIN `users` u ON s.id_administrador = u.id

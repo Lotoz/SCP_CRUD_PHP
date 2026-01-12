@@ -1,6 +1,6 @@
   <?php
 
-    require_once 'interfaces/IUserRepository.php';
+    require_once 'interfaces/ILoginUserRepository.php';
     require_once 'models/User.php';
     require_once 'config/Database.php';
 
@@ -9,7 +9,7 @@
      * Maneja todas las operaciones de base de datos relacionadas con usuarios
      * No contiene lógica de controlador, solo acceso a datos
      */
-    class MariaDBUserRepository implements IUserRepository
+    class MariaDBILoginUserRepository implements ILoginUserRepository
     {
         private $conn; //Conexion con la base de datos
         private $table = 'users';
@@ -83,9 +83,9 @@
         public function save(User $user)
         {
             $query = "INSERT INTO " . $this->table . " 
-                  (id, nombre, apellido, email, password, rol, theme, intentosFallidos, activo, fechaCreacion) 
+                  (id, name, lastname, email, password, rol, theme, tryAttempts, state, creationDate) 
                   VALUES 
-                  (:id, :nombre, :apellido, :email, :password, :rol, :theme, :intentos, :activo, :fecha)";
+                  (:id, :name, :lastname, :email, :password, :rol, :theme, :tryAttempts, :state, :creationDate)";
 
             try {
                 $stmt = $this->conn->prepare($query);
@@ -93,15 +93,15 @@
                 // Hash de la contraseña
                 $hashedPassword = password_hash($user->getPassword(), PASSWORD_BCRYPT);
                 $stmt->bindParam(':id', $user->getId(), PDO::PARAM_STR);
-                $stmt->bindParam(':nombre', $user->getNombre(), PDO::PARAM_STR);
-                $stmt->bindParam(':apellido', $user->getApellido(), PDO::PARAM_STR);
+                $stmt->bindParam(':name', $user->getname(), PDO::PARAM_STR);
+                $stmt->bindParam(':lastname', $user->getlastname(), PDO::PARAM_STR);
                 $stmt->bindParam(':email', $user->getEmail(), PDO::PARAM_STR);
                 $stmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
                 $stmt->bindParam(':rol', $user->getRol(), PDO::PARAM_STR);
                 $stmt->bindParam(':theme', $user->getTheme(), PDO::PARAM_STR);
-                $stmt->bindParam(':intentos', $user->getIntentosFallidos(), PDO::PARAM_INT);
-                $stmt->bindParam(':activo', $user->isActivo(), PDO::PARAM_BOOL);
-                $stmt->bindParam(':fecha', $user->getFechaCreacion(), PDO::PARAM_STR);
+                $stmt->bindParam(':tryAttempts', $user->gettryAttempts(), PDO::PARAM_INT);
+                $stmt->bindParam(':state', $user->isstate(), PDO::PARAM_BOOL);
+                $stmt->bindParam(':creationDate', $user->getcreationDate(), PDO::PARAM_STR);
 
                 return $stmt->execute();
             } catch (PDOException $e) {
@@ -117,11 +117,11 @@
          */
         public function updateAttempts($id, $attempts)
         {
-            $query = "UPDATE " . $this->table . " SET intentosFallidos = :intentos WHERE id = :id";
+            $query = "UPDATE " . $this->table . " SET tryAttempts = :attempts WHERE id = :id";
 
             try {
                 $stmt = $this->conn->prepare($query);
-                $stmt->bindParam(':intentos', $attempts, PDO::PARAM_INT);
+                $stmt->bindParam(':attempts', $attempts, PDO::PARAM_INT);
                 $stmt->bindParam(':id', $id, PDO::PARAM_STR);
 
                 return $stmt->execute();
@@ -135,7 +135,7 @@
          */
         public function updateState($id)
         {
-            $query = "UPDATE " . $this->table . " SET activo = 0 WHERE id = :id";
+            $query = "UPDATE " . $this->table . " SET state = 0 WHERE id = :id";
 
             try {
                 $stmt = $this->conn->prepare($query);
@@ -155,7 +155,7 @@
         public function resetAttempts($id)
         {
             $query = "UPDATE " . $this->table . " 
-                  SET intentosFallidos = 0
+                  SET tryAttempts = 0
                   WHERE id = :id";
 
             try {
@@ -179,8 +179,8 @@
         {
             $user = new User(
                 $row['id'],
-                $row['nombre'],
-                $row['apellido'],
+                $row['name'],
+                $row['lastname'],
                 $row['email'],
                 $row['password'],
                 $row['level'],
@@ -188,9 +188,9 @@
                 $row['theme']
             );
 
-            $user->setIntentosFallidos($row['intentosFallidos']);
-            $user->setActivo((bool)$row['activo']);
-            $user->setFechaCreacion($row['fechaCreacion']);
+            $user->settryAttempts($row['tryAttempts']);
+            $user->setstate((bool)$row['state']);
+            $user->setcreationDate($row['creationDate']);
 
             return $user;
         }

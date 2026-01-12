@@ -34,7 +34,7 @@
         }
         ?>
         <form action="index.php?action=registerprocess" method="POST" class="login-form" id="register-form" autocomplete="off">
-    
+
             <div class="mb-3 text-start">
                 <label for="id" class="form-label">OPERATIVE ID (USERNAME)</label>
                 <input type="text" name="id" id="id" class="form-control scp-input" placeholder="Enter operative ID..." autocomplete="off">
@@ -43,13 +43,13 @@
 
             <div class="mb-3 text-start">
                 <label for="nombre" class="form-label">FIRST NAME</label>
-                <input type="text" name="nombre" id="nombre" class="form-control scp-input" placeholder="Enter first name..." autocomplete="off">
+                <input type="text" name="name" id="name" class="form-control scp-input" placeholder="Enter first name..." autocomplete="off">
             </div>
             <div class="alert alert-danger mb-3 bg-dark border border-danger scp-error" role="alert" id="errorFirstName" hidden></div>
 
             <div class="mb-3 text-start">
                 <label for="apellido" class="form-label">LAST NAME</label>
-                <input type="text" name="apellido" id="apellido" class="form-control scp-input" placeholder="Enter last name..." autocomplete="off">
+                <input type="text" name="lastname" id="lastname" class="form-control scp-input" placeholder="Enter last name..." autocomplete="off">
             </div>
             <div class="alert alert-danger mb-3 bg-dark border border-danger scp-error" role="alert" id="errorLastName" hidden></div>
 
@@ -58,15 +58,6 @@
                 <input type="email" name="email" id="email" class="form-control scp-input" placeholder="Enter email..." autocomplete="off">
             </div>
             <div class="alert alert-danger mb-3 bg-dark border border-danger scp-error" role="alert" id="errorEmail" hidden></div>
-
-            <div class="mb-3 text-start">
-                <label for="rol" class="form-label">ASSIGNMENT ROLE</label>
-                <select name="rol" id="rol" class="form-control scp-input">
-                    <option value="scienct" selected>Scientist</option>
-                    <option value="researcher">Researcher</option>
-                    <option value="cleaner">Cleaner</option>
-                </select>
-            </div>
 
             <div class="mb-3 text-start">
                 <label for="password" class="form-label">SECURITY CLEARANCE (PASSWORD)</label>

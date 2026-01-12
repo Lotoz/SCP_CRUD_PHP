@@ -17,7 +17,6 @@ class SessionManager
             ]);
             session_start();
         }
-        self::checkActivity();
     }
 
     //  Regeneración de ID y Timeout por inactividad
@@ -60,26 +59,26 @@ class SessionManager
         return false;
     }
 
-   public static function logout()
-{
-    // Vaciar array por las dudas
-    $_SESSION = [];
+    public static function logout()
+    {
+        // Vaciar array por las dudas
+        $_SESSION = [];
 
-    // Borrar cookie
-    if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(
-            session_name(),
-            '',
-            time() - 42000,
-            $params["path"],
-            $params["domain"],
-            $params["secure"],
-            $params["httponly"]
-        );
+        // Borrar cookie
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+        session_unset();
+        // Destruir sesión
+        session_destroy();
     }
-    session_unset();
-    // Destruir sesión
-    session_destroy();
-}
 }

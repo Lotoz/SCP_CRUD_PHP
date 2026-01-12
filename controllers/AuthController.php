@@ -1,7 +1,7 @@
 <?php
 
 require_once 'models/User.php';
-require_once 'interfaces/IUserRepository.php';
+require_once 'interfaces/ILoginUserRepository.php';
 require_once 'config/Database.php';
 
 /**
@@ -18,9 +18,9 @@ class AuthController
 
     /**
      * Constructor con inyección de dependencias
-     * @param IUserRepository $userRepository Repository de usuarios
+     * @param ILoginUserRepository $userRepository Repository de usuarios
      */
-    public function __construct(IUserRepository $userRepository)
+    public function __construct(ILoginUserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
     }
@@ -48,7 +48,7 @@ class AuthController
         $id = isset($_POST['user']) ? trim($_POST['user']) : '';
         $password = isset($_POST['password']) ? $_POST['password'] : '';
         if (empty($id) || empty($password)) {
-            $_SESSION['error'] = 'Debe ingresar usuario y contraseña';
+            $_SESSION['error'] = 'Debe ingresar usuario y contraseña.';
             header('Location: index.php?action=login');
             exit();
         }
@@ -56,33 +56,33 @@ class AuthController
         try {
             $user = $this->userRepository->getById($id);
             if (!$user) {
-                $_SESSION['error'] = 'Credenciales inválidas';
+                $_SESSION['error'] = 'Credenciales inválidas.';
                 sleep(1); // Pequeña pausa para evitar ataques de fuerza bruta rápidos
                 header('Location: index.php?action=login');
                 exit();
             }
 
-            if (!$user->isActivo()) {
-                $_SESSION['error'] = 'Usuario inactivo. Contacte al administrador';
+            if (!$user->isstate()) {
+                $_SESSION['error'] = 'Usuario inactivo. Contacte al administrador.';
                 header('Location: index.php?action=login');
                 exit();
             }
 
             if (!$user->verificarPassword($password)) {
-                $intentos = $user->getIntentosFallidos() + 1;
+                $intentos = $user->gettryAttempts() + 1;
                 $this->userRepository->updateAttempts($id, $intentos);
                 if ($intentos >= 5) {
                     $_SESSION['error'] = 'Cuenta bloqueada temporalmente por intentos fallidos.';
                     $this->userRepository->updateState($id);
                 } else {
-                    $_SESSION['error'] = 'Credenciales inválidas';
+                    $_SESSION['error'] = 'Credenciales inválidas.';
                 }
 
                 header('Location: index.php?action=login');
                 exit();
             }
 
-            if ($user->getIntentosFallidos() > 0) {
+            if ($user->gettryAttempts() > 0) {
                 $this->userRepository->resetAttempts($id);
             }
 
@@ -90,7 +90,7 @@ class AuthController
 
             $_SESSION['idusuario'] = $user->getId();
             $_SESSION['email'] = $user->getEmail();
-            $_SESSION['nombre'] = $user->getNombreCompleto();
+            $_SESSION['name'] = $user->getFullName();
             $_SESSION['level'] = $user->getLevel();
             $_SESSION['rol'] = $user->getRol();
             $_SESSION['theme'] = $user->getTheme() . '.css';
@@ -146,18 +146,17 @@ class AuthController
         }
 
 
-        $id       = $this->sanitizeInput($_POST['id'] ?? '');
-        $nombre   = $this->sanitizeInput($_POST['nombre'] ?? '');
-        $apellido = $this->sanitizeInput($_POST['apellido'] ?? '');
+        $id = $this->sanitizeInput($_POST['id'] ?? '');
+        $name = $this->sanitizeInput($_POST['name'] ?? '');
+        $lastname = $this->sanitizeInput($_POST['lastname'] ?? '');
 
         $emailRaw = $_POST['email'] ?? '';
-        $email    = filter_var($emailRaw, FILTER_SANITIZE_EMAIL);
+        $email = filter_var($emailRaw, FILTER_SANITIZE_EMAIL);
 
         $password = $_POST['password'] ?? '';
         $confirm_password = $_POST['confirm_password'] ?? '';
-        $rol = $_POST['rol'] ?? 'scienct';
 
-        if (empty($id) || empty($nombre) || empty($apellido) || empty($email) || empty($password)) {
+        if (empty($id) || empty($name) || empty($lastname) || empty($email) || empty($password)) {
             $_SESSION['error'] = 'Todos los campos son obligatorios.';
             header('Location: index.php?action=register');
             exit();
@@ -202,7 +201,7 @@ class AuthController
                 exit();
             }
 
-            $user = new User($id, $nombre, $apellido, $email, $password, 0, $rol, 'gears'); //0 -> user no habilitado, se debera habilitar
+            $user = new User($id, $name, $lastname, $email, $password, 0, 'NotRol', 'gears'); //0 -> user no habilitado, se debera habilitar
 
             if ($this->userRepository->save($user)) {
                 $_SESSION['success'] = 'Operativo registrado correctamente. Proceda a identificarse.';
