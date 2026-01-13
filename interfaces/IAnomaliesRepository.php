@@ -3,7 +3,7 @@
 /**
  * 
  */
-interface IUserRepository
+interface IAnomaliesRepository
 {
 
     /**
@@ -15,13 +15,17 @@ interface IUserRepository
     /**
      * Crear nuevo item
      */
-    public function createUser(User $user);
+    public function createAnomalies(Anomalies $anomalie);
     /**
      * Editar object
      */
-    public function editUser($id);
+    public function editAnomalies($id);
     /**
      * Eliminar un objeto
      */
-    public function deleteUser($id);
+    public function deleteAnomalies($id);
+    /**
+     * Busca un objeto especifico
+     */
+    public function search($id);
 }

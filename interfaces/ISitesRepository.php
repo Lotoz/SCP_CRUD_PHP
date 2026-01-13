@@ -1,9 +1,9 @@
 <?php
 
 /**
- * 
+ * Interfaz para manejar los sitios
  */
-interface IUserRepository
+interface ISitesRepository
 {
 
     /**
@@ -11,17 +11,16 @@ interface IUserRepository
      * hace una consulta a la base de datos y trae todos sus datos
      */
     public function allData();
-
     /**
      * Crear nuevo item
      */
-    public function createUser(User $user);
+    public function createSite(Site $site);
     /**
      * Editar object
      */
-    public function editUser($id);
+    public function editSite($id);
     /**
      * Eliminar un objeto
      */
-    public function deleteUser($id);
+    public function deletSite($id);
 }

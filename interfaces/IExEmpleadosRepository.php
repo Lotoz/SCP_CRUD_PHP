@@ -1,9 +1,9 @@
 <?php
 
 /**
- * 
+ * Interfaz para la tabla de ex-empleados
  */
-interface IUserRepository
+interface IExEmpleadosRepository
 {
 
     /**
@@ -11,17 +11,16 @@ interface IUserRepository
      * hace una consulta a la base de datos y trae todos sus datos
      */
     public function allData();
-
     /**
      * Crear nuevo item
      */
-    public function createUser(User $user);
+    public function createExempleados(ExEmpleados $exEmpleados);
     /**
      * Editar object
      */
-    public function editUser($id);
+    public function editExempleados($id);
     /**
      * Eliminar un objeto
      */
-    public function deleteUser($id);
+    public function deleteExempleados($id);
 }

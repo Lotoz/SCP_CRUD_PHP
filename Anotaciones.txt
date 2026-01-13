@@ -1,0 +1,7 @@
+Crea un controlador para cada tabla, pero una interfaz crud solo para cada conexion.
+Cada conexion se une a su controlador y se maneja desde el index.
+
+-Agregar controladores JavaScript para cada pagina que use el create.
+https://www.baulphp.com/3-formas-para-cerrar-la-conexion-pdo-de-php/
+
+Agregar las contrasenas con hash al CRUD y cuando salga del CRUD se vea normal

@@ -101,13 +101,14 @@ CREATE TABLE IF NOT EXISTS `sitio` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- Tabla SCP (Las Anomalías)
-CREATE TABLE IF NOT EXISTS `scp` (
+CREATE TABLE IF NOT EXISTS `anomalies` (
     `id` VARCHAR(20) PRIMARY KEY,
-    `apodo` VARCHAR(100),
+    `nickname` VARCHAR(100),
     `class` VARCHAR(255) NOT NULL,
     `contencion` TEXT,
-    `descripcion` TEXT,
+    `description` TEXT,
     `doc_extensa` VARCHAR(255),
+    `img_url` TEXT,
     `id_sitio` INT,
     INDEX (`id_sitio`),
     CONSTRAINT `fk_scp_sitio` FOREIGN KEY (`id_sitio`) REFERENCES `sitio`(`id`) ON DELETE SET NULL
@@ -115,9 +116,9 @@ CREATE TABLE IF NOT EXISTS `scp` (
 
 -- Tabla TAREAS ASIGNADAS
 -- Vinculada al usuario que debe realizarla
-CREATE TABLE IF NOT EXISTS `tareas` (
+CREATE TABLE IF NOT EXISTS `tasks` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `descripcion` TEXT NOT NULL,
+    `description` TEXT NOT NULL,
     `completado` TINYINT(1) DEFAULT 0,
     `id_usuario` VARCHAR(25) NOT NULL,
     INDEX (`id_usuario`),
@@ -129,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `tareas` (
 CREATE TABLE IF NOT EXISTS `personal_asignado` (
     `id_usuario` VARCHAR(25) NOT NULL,
     `id_scp` VARCHAR(20) NOT NULL,
-    `rol_anomalia` VARCHAR(50),
+    `rol_usuario` VARCHAR(50),
     PRIMARY KEY (`id_usuario`, `id_scp`),
     CONSTRAINT `fk_pa_user` FOREIGN KEY (`id_usuario`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_pa_scp` FOREIGN KEY (`id_scp`) REFERENCES `scp`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
@@ -145,19 +146,3 @@ DROP TRIGGER IF EXISTS `before_user_delete`;
 CREATE TRIGGER `before_user_delete` BEFORE DELETE ON `users`
 FOR EACH ROW INSERT INTO `ex_empleados` (name, lastname, rol, level, fecha_eliminacion)
 VALUES ( OLD.name,OLD.lastname, OLD.rol, OLD.level, NOW());
-
-
--- Vista de Detalles del Sitio (Cálculo automático de personal)
--- Te dice cuántos empleados únicos están asignados a SCPs dentro de un sitio
--- Sirve para ahorrar consultas a la base de datos
-CREATE OR REPLACE VIEW `vista_sitio_detalles` AS
-SELECT 
-    s.id AS Sitio_ID,
-    s.namee_sitio,
-    CONCAT(u.name, ' ', u.lastname) AS Administrador,
-    COUNT(DISTINCT pa.id_usuario) AS Total_Personal_Asignado
-FROM `sitio` s
-LEFT JOIN `users` u ON s.id_administrador = u.id
-LEFT JOIN `scp` sc ON s.id = sc.id_sitio
-LEFT JOIN `personal_asignado` pa ON sc.id = pa.id_scp
-GROUP BY s.id;

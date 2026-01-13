@@ -22,7 +22,7 @@
                 <li><a href="#">SCP Wiki</a></li>
                 <li><a href="#">Personal Notes</a></li>
                 <!--Database.php solo se muestra si es nivel 5 o mas-->
-                <li><a href="#">Database</a></li>
+                <li><a href="index.php?action=database">Database</a></li>
                 <li><a href="index.php?action=logout" style="color: #ff4444;">[LOG OUT]</a></li>
             </ul>
         </nav>

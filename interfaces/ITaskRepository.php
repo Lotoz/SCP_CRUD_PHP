@@ -3,7 +3,7 @@
 /**
  * 
  */
-interface IUserRepository
+interface ITaskRepository
 {
 
     /**
@@ -15,13 +15,17 @@ interface IUserRepository
     /**
      * Crear nuevo item
      */
-    public function createUser(User $user);
+    public function createTask(Task $task);
     /**
      * Editar object
      */
-    public function editUser($id);
+    public function editTask($id);
     /**
      * Eliminar un objeto
      */
-    public function deleteUser($id);
+    public function deleteTask($id);
+    /**
+     * Busca un objeto especifico
+     */
+    public function search($id);
 }
