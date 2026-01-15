@@ -5,38 +5,34 @@ require_once 'interfaces/ILoginUserRepository.php';
 require_once 'config/Database.php';
 
 /**
- * AuthController - Controlador de autenticación
- * Responsable de:
- *  - Recibir peticiones HTTP
- *  - Llamar al repositorio para acceso a datos
- *  - Manejar la lógica de sesiones
- *  - Renderizar las vistas
+ * AuthController - Authentication Controller
+ * I am responsible for:
+ * - Handling HTTP requests regarding login/register.
+ * - Calling the repository for data access.
+ * - Managing session logic.
+ * - Rendering the auth views.
  */
 class AuthController
 {
     private $userRepository;
+    private $taskRepository;
 
-    /**
-     * Constructor con inyección de dependencias
-     * @param ILoginUserRepository $userRepository Repository de usuarios
-     */
-    public function __construct(ILoginUserRepository $userRepository)
+    public function __construct(ILoginUserRepository $userRepository, ITaskRepository $taskRepository)
     {
         $this->userRepository = $userRepository;
+        $this->taskRepository = $taskRepository;
     }
 
-    /**
-     * Mostrar formulario de login
-     */
     public function login()
     {
+        if (isset($_SESSION['user_id'])) {
+            header('Location: index.php?action=dashboard');
+            exit();
+        }
+        $csrf_token = SessionManager::generateCSRFToken();
         include 'views/login.php';
     }
 
-    /**
-     * Procesar autenticación del usuario
-     * Se ejecuta cuando el usuario envía el formulario de login
-     */
     public function authenticate()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -44,81 +40,95 @@ class AuthController
             exit();
         }
 
+        // 1. INPUT VALIDATION (No usar $_POST directo)
+        // filter_input devuelve null si no existe, false si falla el filtro
+        $id = filter_input(INPUT_POST, 'user', FILTER_DEFAULT);
+        $password = filter_input(INPUT_POST, 'password', FILTER_DEFAULT); // No sanitizamos passwords
 
-        $id = isset($_POST['user']) ? trim($_POST['user']) : '';
-        $password = isset($_POST['password']) ? $_POST['password'] : '';
-        if (empty($id) || empty($password)) {
-            $_SESSION['error'] = 'Debe ingresar usuario y contraseña.';
+        if (!$id || !$password) {
+            $_SESSION['error'] = 'Username and password are required.';
             header('Location: index.php?action=login');
             exit();
         }
 
+        // Trim después de obtener
+        $id = trim($id);
+
         try {
             $user = $this->userRepository->getById($id);
+
+            // Prevención de enumeración de usuarios (Mensaje genérico)
             if (!$user) {
-                $_SESSION['error'] = 'Credenciales inválidas.';
-                sleep(1); // Pequeña pausa para evitar ataques de fuerza bruta rápidos
+                $_SESSION['error'] = 'Invalid credentials.';
                 header('Location: index.php?action=login');
                 exit();
             }
 
             if (!$user->isstate()) {
-                $_SESSION['error'] = 'Usuario inactivo. Contacte al administrador.';
+                $_SESSION['error'] = 'Account locked. Contact Administration.';
                 header('Location: index.php?action=login');
                 exit();
             }
 
             if (!$user->verificarPassword($password)) {
-                $intentos = $user->gettryAttempts() + 1;
-                $this->userRepository->updateAttempts($id, $intentos);
-                if ($intentos >= 5) {
-                    $_SESSION['error'] = 'Cuenta bloqueada temporalmente por intentos fallidos.';
-                    $this->userRepository->updateState($id);
-                } else {
-                    $_SESSION['error'] = 'Credenciales inválidas.';
-                }
+                $attempts = $user->getTryAttempts() + 1;
+                $this->userRepository->updateAttempts($id, $attempts);
 
+                if ($attempts >= 5) {
+                    $this->userRepository->updateState($id); // Bloqueo
+                    $_SESSION['error'] = 'Account locked due to excessive login attempts.';
+                } else {
+                    $_SESSION['error'] = 'Invalid credentials.';
+                }
                 header('Location: index.php?action=login');
                 exit();
             }
 
-            if ($user->gettryAttempts() > 0) {
-                $this->userRepository->resetAttempts($id);
-            }
+            // Login Exitoso
+            $this->userRepository->resetAttempts($id);
+            session_regenerate_id(true); // Prevenir Session Fixation
 
-            session_regenerate_id(true);
+            $_SESSION['user_id'] = $user->getId();
+            $_SESSION['name']    = $user->getFullName();
+            $_SESSION['level']   = $user->getLevel();
+            $_SESSION['rol']     = $user->getRol();
 
-            $_SESSION['idusuario'] = $user->getId();
-            $_SESSION['email'] = $user->getEmail();
-            $_SESSION['name'] = $user->getFullName();
-            $_SESSION['level'] = $user->getLevel();
-            $_SESSION['rol'] = $user->getRol();
-            $_SESSION['theme'] = $user->getTheme() . '.css';
+            // Validación de Tema para evitar Path Traversal (ej: ../../hack.css)
+            $allowedThemes = ['gears', 'unicorn', 'ice', 'admin', 'clef', 'sophie'];
+            $theme = $user->getTheme();
+            $_SESSION['theme'] = in_array($theme, $allowedThemes) ? $theme . '.css' : 'gears.css';
 
             header('Location: index.php?action=dashboard');
             exit();
         } catch (Exception $e) {
-            error_log("Error Login: " . $e->getMessage());
-            $_SESSION['error'] = 'Ocurrió un error en el sistema. Intente más tarde.';
+            error_log("Login Error: " . $e->getMessage());
+            $_SESSION['error'] = 'System Error.';
             header('Location: index.php?action=login');
             exit();
         }
-    }
-    /**
-     * Mostrar dashboard (página principal)
-     * Solo accesible si el usuario está autenticado
-     */
-    public function dashboard()
-    {
-        if (!isset($_SESSION['idusuario'])) {
-            header('Location: index.php?action=login');
-            exit();
-        }
-        include 'views/dashboard.php';
     }
 
     /**
-     * Cerrar sesión del usuario
+     * I show the dashboard (main page).
+     * Only accessible if the user is authenticated.
+     */
+    public function dashboard() // O index()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: index.php?action=login');
+            exit;
+        }
+
+        $userId = $_SESSION['user_id'];
+
+        // Llamamos al nuevo método del repositorio
+        $tasks = $this->taskRepository->getNotCompletedTasks($userId);
+
+        require_once 'views/dashboard.php';
+    }
+
+    /**
+     * I log the user out and destroy the session.
      */
     public function logout()
     {
@@ -127,17 +137,12 @@ class AuthController
         exit();
     }
 
-    /**
-     * Mostrar formulario de registro
-     */
     public function register()
     {
+        $csrf_token = SessionManager::generateCSRFToken();
         include 'views/register.php';
     }
 
-    /**
-     * Procesar el registro de un nuevo usuario
-     */
     public function registerProcess()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -145,90 +150,72 @@ class AuthController
             exit();
         }
 
-
-        $id = $this->sanitizeInput($_POST['id'] ?? '');
-        $name = $this->sanitizeInput($_POST['name'] ?? '');
-        $lastname = $this->sanitizeInput($_POST['lastname'] ?? '');
-
-        $emailRaw = $_POST['email'] ?? '';
-        $email = filter_var($emailRaw, FILTER_SANITIZE_EMAIL);
+        // INPUT VALIDATION ROBUSTA
+        $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_SPECIAL_CHARS);
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
+        $lastname = filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_SPECIAL_CHARS);
+        $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 
         $password = $_POST['password'] ?? '';
         $confirm_password = $_POST['confirm_password'] ?? '';
 
-        if (empty($id) || empty($name) || empty($lastname) || empty($email) || empty($password)) {
-            $_SESSION['error'] = 'Todos los campos son obligatorios.';
+        if (!$id || !$name || !$lastname || !$email || !$password) {
+            $_SESSION['error'] = 'All fields are required and must be valid.';
             header('Location: index.php?action=register');
             exit();
         }
 
+        // Validación de formato de ID (Solo letras, numeros, - y _)
         if (!preg_match('/^[a-zA-Z0-9_-]+$/', $id)) {
-            $_SESSION['error'] = 'El ID contiene caracteres inválidos o espacios. Use solo letras, números, "-" y "_".';
+            $_SESSION['error'] = 'ID contains invalid characters.';
             header('Location: index.php?action=register');
             exit();
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $_SESSION['error'] = 'Formato de correo electrónico inválido.';
-            header('Location: index.php?action=register');
-            exit();
-        }
-
-        // Validar Contraseñas
         if ($password !== $confirm_password) {
-            $_SESSION['error'] = 'Las credenciales de seguridad (contraseñas) no coinciden.';
+            $_SESSION['error'] = 'Passwords do not match.';
             header('Location: index.php?action=register');
             exit();
         }
 
         if (strlen($password) < 8) {
-            $_SESSION['error'] = 'La contraseña debe tener al menos 8 caracteres.';
+            $_SESSION['error'] = 'Password too short (min 8 chars).';
             header('Location: index.php?action=register');
             exit();
         }
 
         try {
-
             if ($this->userRepository->getById($id)) {
-                $_SESSION['error'] = 'Operative ID ya registrado. Solicite uno diferente.';
+                $_SESSION['error'] = 'ID already taken.';
                 header('Location: index.php?action=register');
                 exit();
             }
 
             if ($this->userRepository->getByEmail($email)) {
-                $_SESSION['error'] = 'Este correo electrónico ya existe en la base de datos.';
+                $_SESSION['error'] = 'Email already exists.';
                 header('Location: index.php?action=register');
                 exit();
             }
 
-            $user = new User($id, $name, $lastname, $email, $password, 0, 'NotRol', 'gears'); //0 -> user no habilitado, se debera habilitar
+            // CREAR USUARIO
+            // NOTA: Pasamos la password PLANA ($password), porque el Repository::save() 
+            // ya tiene la línea: password_hash(..., PASSWORD_BCRYPT);
+            $user = new User($id, $name, $lastname, $email, $password, 1, 'cleaner', 'gears');
 
             if ($this->userRepository->save($user)) {
-                $_SESSION['success'] = 'Operativo registrado correctamente. Proceda a identificarse.';
+                $_SESSION['success'] = 'Registered successfully.';
                 header('Location: index.php?action=login');
                 exit();
             } else {
-                $_SESSION['error'] = 'Error crítico en el sistema de registro.';
+                $_SESSION['error'] = 'Database error.';
                 header('Location: index.php?action=register');
                 exit();
             }
         } catch (Exception $e) {
-            $_SESSION['error'] = 'Error del sistema: Contacte al administrador.';
             error_log($e->getMessage());
+            $_SESSION['error'] = 'System Error.';
             header('Location: index.php?action=register');
             exit();
         }
-    }
-
-    /**
-     * Función auxiliar para limpiar entradas de texto
-     * Elimina espacios extra, barras invertidas y convierte caracteres especiales en entidades HTML
-     */
-    private function sanitizeInput($data)
-    {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-        return $data;
     }
 }

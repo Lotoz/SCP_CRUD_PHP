@@ -1,43 +1,13 @@
 <?php
 // views/wiki/index.php
-
+// SEGURIDAD: Evitar acceso directo al archivo.
+// Si no existe la variable del controlador, significa que entraron "por la ventana".
+if (!isset($anomaliesList)) {
+    header("Location: ../index.php?action=login");
+    exit();
+}
 $pageTitle = "SCP Foundation Database - Access Clearance Verified";
 require_once 'views/templates/header.php';
-
-// --- SIMULACIÓN DE DATOS (Esto vendrá de tu base de datos real luego) ---
-// Cuando programes tu lógica, $anomalies vendrá de $scpController->getByLevel($_SESSION['level']);
-if (!isset($anomalies)) {
-    $anomalies = [
-        [
-            'id' => 'SCP-173',
-            'apodo' => 'The Sculpture',
-            'class' => 'Euclid',
-            'imagen' => 'https://upload.wikimedia.org/wikipedia/commons/e/ec/SCP-173_fan_art.png', // Placeholder
-            'descripcion' => 'Moved to Site-19 in 1993. Origin is as of yet unknown. It is constructed from concrete and rebar with traces of Krylon brand spray paint.'
-        ],
-        [
-            'id' => 'SCP-096',
-            'apodo' => 'The Shy Guy',
-            'class' => 'Euclid',
-            'imagen' => 'https://static.wikia.nocookie.net/villains/images/2/22/SCP-096_model.jpg',
-            'descripcion' => 'SCP-096 is a humanoid creature measuring approximately 2.38 meters in height. Subject shows very little muscle mass.'
-        ],
-        [
-            'id' => 'SCP-682',
-            'apodo' => 'Hard-to-Destroy Reptile',
-            'class' => 'Keter',
-            'imagen' => 'https://static.wikia.nocookie.net/scp-foundation-reboot/images/e/e4/SCP-682.jpg',
-            'descripcion' => 'SCP-682 is a large, vaguely reptile-like creature of unknown origin. It appears to be extremely intelligent.'
-        ],
-        [
-            'id' => 'SCP-999',
-            'apodo' => 'The Tickle Monster',
-            'class' => 'Safe',
-            'imagen' => 'https://static.wikia.nocookie.net/villains/images/e/e3/SCP-999_D.png',
-            'descripcion' => 'SCP-999 appears to be a large, amorphous, gelatinous mass of translucent orange slime.'
-        ]
-    ];
-}
 ?>
 
 <main class="container my-5">
@@ -46,10 +16,10 @@ if (!isset($anomalies)) {
         <div class="col-12">
             <div class="msgUser text-center" style="border-left-color: #d9534f;">
                 <h1 style="font-family: 'Share Tech Mono'; text-transform: uppercase; letter-spacing: 2px;">
-                    ⚠ Classified Archives
+                    <i class="fas fa-database"></i> Classified Archives
                 </h1>
                 <p class="mb-0">
-                    <strong>CLEARANCE VERIFIED:</strong> Level <?php echo $_SESSION['level'] ?? '1'; ?> Personnel.
+                    <strong>CLEARANCE VERIFIED:</strong> Level <?php echo $_SESSION['level'] ?? '0'; ?> Personnel.
                     <br>
                     <span class="text-muted">Displaying accessible anomalies based on your security clearance.</span>
                 </p>
@@ -61,54 +31,78 @@ if (!isset($anomalies)) {
         <div class="col-md-8 mx-auto">
             <div class="input-group">
                 <span class="input-group-text bg-dark text-white border-dark" style="font-family: 'Share Tech Mono';">CMD://SEARCH_</span>
-                <input type="text" class="form-control border-dark" placeholder="Enter Item # or Keywords...">
-                <button class="btn btn-dark" type="button">EXECUTE</button>
+                <input type="text" id="searchInput" class="form-control border-dark" placeholder="Enter Item # or Keywords...">
+                <button class="btn btn-dark" type="button" onclick="alert('Search functionality is handled by the Archives Department.');">EXECUTE</button>
             </div>
         </div>
     </div>
 
     <div class="row g-4">
-        <?php foreach ($anomalies as $scp): ?>
-            <div class="col-md-6 col-lg-4">
-                <div class="card scp-card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <strong style="font-family: 'Share Tech Mono'; font-size: 1.2rem;">
-                            <?php echo $scp['id']; ?>
-                        </strong>
-                        <span class="badge scp-class-badge <?php echo strtolower($scp['class']); ?>">
-                            <?php echo strtoupper($scp['class']); ?>
-                        </span>
-                    </div>
-
-                    <div class="scp-img-container">
-                        <img src="<?php echo $scp['imagen'] ?? 'views/assets/img/redacted_image.png'; ?>"
-                            alt="<?php echo $scp['apodo']; ?>" class="card-img-top scp-img">
-                        <div class="overlay">
-                            <span>ACCESS FILE</span>
-                        </div>
-                    </div>
-
-                    <div class="card-body">
-                        <h5 class="card-title text-uppercase fw-bold border-bottom pb-2">
-                            <?php echo $scp['apodo']; ?>
-                        </h5>
-                        <p class="card-text text-muted scp-description">
-                            <strong style="font-family: 'Share Tech Mono';">CONTAINMENT:</strong><br>
-                            <?php
-                            // Recortamos la descripción para que no sea muy larga
-                            echo substr($scp['descripcion'], 0, 120) . '...';
-                            ?>
-                        </p>
-                    </div>
-
-                    <div class="card-footer bg-transparent border-top-0 pb-3">
-                        <a href="index.php?action=wiki_detail&id=<?php echo $scp['id']; ?>" class="btn btn-outline-dark w-100" style="font-family: 'Share Tech Mono';">
-                            [ OPEN FILE ]
-                        </a>
-                    </div>
+        <?php if (empty($anomaliesList)): ?>
+            <div class="col-12 text-center">
+                <div class="alert alert-warning">
+                    No records found matching your security clearance.
                 </div>
             </div>
-        <?php endforeach; ?>
+        <?php else: ?>
+            <?php foreach ($anomaliesList as $scp): ?>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card scp-card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <strong style="font-family: 'Share Tech Mono'; font-size: 1.2rem;">
+                                <?php echo htmlspecialchars($scp->getId()); ?>
+                            </strong>
+                            <span class="badge scp-class-badge <?php echo strtolower($scp->getClass()); ?>">
+                                <?php echo strtoupper($scp->getClass()); ?>
+                            </span>
+                        </div>
+
+                        <div class="scp-img-container">
+                            <?php if ($scp->hasImage()): ?>
+                                <img src="<?php echo htmlspecialchars($scp->getImgUrl()); ?>"
+                                    alt="<?php echo htmlspecialchars($scp->getNickname()); ?>"
+                                    class="card-img-top scp-img">
+                            <?php else: ?>
+                                <div class="d-flex justify-content-center align-items-center h-100 text-white bg-secondary">
+                                    <span>[IMAGE REDACTED]</span>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="overlay">
+                                <span>ACCESS FILE</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title text-uppercase fw-bold border-bottom pb-2">
+                                <?php echo htmlspecialchars($scp->getNickname()); ?>
+                            </h5>
+                            <p class="card-text text-muted scp-description">
+                                <strong style="font-family: 'Share Tech Mono';">CONTAINMENT:</strong><br>
+                                <?php
+                                // I truncate the description to 120 chars
+                                $desc = htmlspecialchars($scp->getDescription());
+                                echo strlen($desc) > 120 ? substr($desc, 0, 120) . '...' : $desc;
+                                ?>
+                            </p>
+                        </div>
+
+                        <div class="card-footer bg-transparent border-top-0 pb-3">
+                            <?php if ($scp->getDocExtensa()): ?>
+                                <a href="<?php echo htmlspecialchars($scp->getDocExtensa()); ?>" target="_blank"
+                                    class="btn btn-outline-dark w-100" style="font-family: 'Share Tech Mono';">
+                                    [ OPEN EXTENDED DOC ] <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            <?php else: ?>
+                                <button class="btn btn-outline-secondary w-100" disabled style="font-family: 'Share Tech Mono';">
+                                    [ DATA EXPUNGED ]
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 
     <div class="row mt-5">
@@ -123,27 +117,28 @@ if (!isset($anomalies)) {
             </div>
         </div>
     </div>
-
+    <script src="<?php echo BASE_URL; ?>views/assets/js/scpwiki.js"></script>
 </main>
 
 <style>
     /* Estilo base de la tarjeta SCP */
     .scp-card {
-        border: 1px solid #999;
+        background-color: var(--card-bg);
+        border: 1px solid var(--accent-color);
         border-radius: 2px;
-        /* Bordes cuadrados estilo documento */
         transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .scp-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        border-color: #333;
+        border-color: var(--highlight-color);
     }
 
     .card-header {
-        background-color: #e9ecef;
-        border-bottom: 2px solid #333;
+        background-color: var(--nav-bg);
+        color: var(--nav-text);
+        border-bottom: 2px solid var(--accent-color);
     }
 
     /* Imagen con efecto de hover */
@@ -160,58 +155,54 @@ if (!isset($anomalies)) {
         height: 100%;
         object-fit: cover;
         opacity: 0.9;
-        filter: grayscale(80%);
-        /* Efecto blanco y negro para dar realismo */
+        filter: grayscale(80%) contrast(1.2);
         transition: filter 0.3s;
     }
 
     .scp-card:hover .scp-img {
-        filter: grayscale(0%);
-        /* Color al pasar el mouse */
+        filter: grayscale(0%) contrast(1);
     }
 
-    /* Colores de las Clases (Importante para lore SCP) */
+    /* Colores de las Clases */
     .scp-class-badge {
         font-family: 'Share Tech Mono', monospace;
         font-size: 0.9rem;
         border: 1px solid rgba(0, 0, 0, 0.2);
         color: #fff;
         text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        padding: 5px 10px;
     }
 
+    /* Mapping classes to colors */
     .safe {
         background-color: #28a745;
-        /* Verde */
     }
 
     .euclid {
         background-color: #ffc107;
-        /* Amarillo */
         color: #000;
-        /* Texto negro para contraste */
     }
 
     .keter {
         background-color: #dc3545;
-        /* Rojo */
     }
 
-    .apollyn {
-        background-color: #000;
-        /* Negro */
-        border: 1px solid #dc3545;
+    .thaumiel {
+        background-color: #007bff;
     }
 
-    .neutralized,
-    .anulado {
+    .neutralized {
         background-color: #6c757d;
-        /* Gris */
     }
 
-    /* Tipografía técnica para la descripción */
     .scp-description {
         font-size: 0.9rem;
         line-height: 1.5;
+        color: var(--text-color);
+    }
+
+    .card-title {
+        color: var(--accent-color);
     }
 </style>
 

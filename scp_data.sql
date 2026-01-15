@@ -1,16 +1,12 @@
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
--- https://www.phpmyadmin.net/
---
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-12-2025 a las 16:49:59
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,8 +24,7 @@ USE `scp_data`;
 --
 -- Estructura de tabla para la tabla `users`
 --
-
-CREATE TABLE IF NOT EXISTS  `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` varchar(25) NOT NULL,
   `password` varchar(250) NOT NULL,
   `name` varchar(70) NOT NULL,
@@ -40,13 +35,13 @@ CREATE TABLE IF NOT EXISTS  `users` (
   `theme` varchar(60) NOT NULL DEFAULT 'gears',
   `tryAttempts` int(2) NOT NULL DEFAULT 0,
   `state` tinyint(1) NOT NULL DEFAULT 0,
-  `creationDate` date NOT NULL
+  `creationDate` date NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `users`
 --
-
 INSERT INTO `users` (`id`, `password`, `name`, `lastname`, `email`, `rol`, `level`, `theme`, `tryAttempts`, `state`, `creationDate`) VALUES
 ('Afton', '$2y$10$0RkS08Ar5f/rdQceioubReKHSQqf585nmx3.f.nNCoZyTKSB/QOga', 'William', 'Afton', 'afton@scp.com', 'cleaner', 1, 'unicorn', 0, 1, '2025-12-19'),
 ('Alto_clef', '$2y$10$YERfqb/FAx2QeFWzW1X0a.NWdI8iaeC3JLVccneu3/ew/kT2cKtaO', 'Francis', 'Wojcienchowski', 'alto.clef@scp.com', 'scienct', 3, 'clef', 0, 1, '2025-12-19'),
@@ -56,30 +51,19 @@ INSERT INTO `users` (`id`, `password`, `name`, `lastname`, `email`, `rol`, `leve
 ('sophieR', '$2y$10$VO1dwpzvkn4FM35Ef1kVb.Z/kXbiIXeOZ2mnKkwFlp0BjHrcRg.PC', 'Sophie Ariadna', 'Scarlett', 'scarlettSophie@scp.com', 'researcher', 2, 'sophie', 0, 1, '2025-12-19');
 
 --
--- Índices para tablas volcadas
+-- Gestión de usuarios y permisos (Opcional según entorno)
+-- Nota: Esto puede fallar si no tienes permisos de root o si el usuario ya existe.
 --
+-- CREATE USER IF NOT EXISTS 'view'@'%' IDENTIFIED BY 'tu_contraseña_aqui';
+-- GRANT ALL PRIVILEGES ON `scp_data`.* TO `view`@`%`;
+-- FLUSH PRIVILEGES;
 
---
--- Indices de la tabla `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
-COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- --------------------------------------------------------
+-- NUEVA IMPLEMENTACIÓN DE TABLAS
+-- --------------------------------------------------------
 
--- Privilegios para `view`@`%` user necesario para el uso de la base de datos su usario es especifico
-GRANT SELECT, INSERT, UPDATE, DELETE, FILE ON *.* TO `view`@`%` IDENTIFIED BY PASSWORD '*5D4B9AEB6CE62913970923D2B7A5BC15F2199608';
-
-GRANT ALL PRIVILEGES ON `scp_data`.* TO `view`@`%`;
-
-FLUSH PRIVILEGES;
-
--- Nueva implementacion 
 -- Tabla EX-EMPLEADOS (Historial de usuarios borrados)
--- Guardará a los usuarios borrados. Usamos int para el id, porque no queremos guardar su id antiguo, solo es una base log, se guardan por seguridad de la organizacion
 CREATE TABLE IF NOT EXISTS `ex_empleados` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `name` varchar(70),
@@ -90,7 +74,6 @@ CREATE TABLE IF NOT EXISTS `ex_empleados` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- Tabla SITIO
--- El administrador se vincula a users(id) que es varchar(25)
 CREATE TABLE IF NOT EXISTS `sitio` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `name_sitio` VARCHAR(100) NOT NULL,
@@ -115,7 +98,6 @@ CREATE TABLE IF NOT EXISTS `anomalies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- Tabla TAREAS ASIGNADAS
--- Vinculada al usuario que debe realizarla
 CREATE TABLE IF NOT EXISTS `tasks` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `description` TEXT NOT NULL,
@@ -126,23 +108,34 @@ CREATE TABLE IF NOT EXISTS `tasks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- Tabla N:M PERSONAL_ASIGNADO
--- Quién cuida a qué SCP. Vincula users(id) con scp(id)
-CREATE TABLE IF NOT EXISTS `personal_asignado` (
-    `id_usuario` VARCHAR(25) NOT NULL,
-    `id_scp` VARCHAR(20) NOT NULL,
-    `rol_usuario` VARCHAR(50),
-    PRIMARY KEY (`id_usuario`, `id_scp`),
-    CONSTRAINT `fk_pa_user` FOREIGN KEY (`id_usuario`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_pa_scp` FOREIGN KEY (`id_scp`) REFERENCES `scp`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+-- CORRECCION: Referencia a la tabla `anomalies` en lugar de `scp`
+CREATE TABLE IF NOT EXISTS `assigned_personnel` (
+    `user_id` VARCHAR(25) NOT NULL,
+    `scp_id` VARCHAR(20) NOT NULL,
+    `role` VARCHAR(50) DEFAULT 'Containment Specialist',
+    PRIMARY KEY (`user_id`, `scp_id`),
+    CONSTRAINT `fk_ap_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_ap_scp` FOREIGN KEY (`scp_id`) REFERENCES `anomalies`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
--- LOGICA AUTOMÁTICA (TRIGGERS Y VISTAS) -> Quita carga al servidor de php y es un trabajo que debe hacer la base de datos
+-- LOGICA AUTOMÁTICA (TRIGGERS)
 -- --------------------------------------------------------
 
 -- Trigger para Ex-Empleados
--- Si borras a alguien de 'users', se guarda aquí automáticamente.
 DROP TRIGGER IF EXISTS `before_user_delete`;
+
+DELIMITER $$
 CREATE TRIGGER `before_user_delete` BEFORE DELETE ON `users`
-FOR EACH ROW INSERT INTO `ex_empleados` (name, lastname, rol, level, fecha_eliminacion)
-VALUES ( OLD.name,OLD.lastname, OLD.rol, OLD.level, NOW());
+FOR EACH ROW 
+BEGIN
+    INSERT INTO `ex_empleados` (name, lastname, rol, level, fecha_eliminacion)
+    VALUES (OLD.name, OLD.lastname, OLD.rol, OLD.level, NOW());
+END$$
+DELIMITER ;
+
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

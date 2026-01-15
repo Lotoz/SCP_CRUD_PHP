@@ -20,7 +20,7 @@ class SessionManager
     }
 
     //  Regeneración de ID y Timeout por inactividad
-    private static function checkActivity()
+    public static function checkActivity()
     {
         // Si hay una última actividad registrada
         if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {

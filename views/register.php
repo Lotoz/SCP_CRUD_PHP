@@ -34,7 +34,7 @@
         }
         ?>
         <form action="index.php?action=registerprocess" method="POST" class="login-form" id="register-form" autocomplete="off">
-
+            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
             <div class="mb-3 text-start">
                 <label for="id" class="form-label">OPERATIVE ID (USERNAME)</label>
                 <input type="text" name="id" id="id" class="form-control scp-input" placeholder="Enter operative ID..." autocomplete="off">

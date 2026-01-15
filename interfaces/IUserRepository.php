@@ -1,27 +1,17 @@
 <?php
 
 /**
- * 
+ * Interface IUserRepository
+ * I define the contract for the User Administration CRUD.
  */
 interface IUserRepository
 {
+    public function getAll();
+    public function getById($id);
+    public function create(User $user);
+    public function update(User $user);
+    public function delete($id);
 
-    /**
-     * Mostrar base de datos
-     * hace una consulta a la base de datos y trae todos sus datos
-     */
-    public function allData();
-
-    /**
-     * Crear nuevo item
-     */
-    public function createUser(User $user);
-    /**
-     * Editar object
-     */
-    public function editUser($id);
-    /**
-     * Eliminar un objeto
-     */
-    public function deleteUser($id);
+    // I added this to handle state changes (Ban/Unban) easily
+    public function updateState($id, $state);
 }

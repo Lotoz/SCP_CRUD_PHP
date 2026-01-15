@@ -24,6 +24,7 @@
         </div>
 
         <form action="index.php?action=authenticate" method="POST" class="login-form" id="login-principal" autocomplete="off">
+            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
             <div class="mb-3 text-start">
                 <label for="user" class="form-label">OPERATIVE ID</label>
                 <input type="text" name="user" id="user" class="form-control scp-input" placeholder="Enter ID..." autocomplete="off">
@@ -43,12 +44,16 @@
                 <button type="submit" class="btn btn-scp" id="btnLogin">AUTHENTICATE</button>
             </div>
             <br>
-            <?php
-            if (isset($_SESSION['error'])) {
-                echo '<div class="alert alert-danger mb-3 bg-dark border border-danger  scp-error" role="alert">' . $_SESSION['error'] . "</div>";
-                unset($_SESSION['error']);
-            }
-            ?>
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <?php
+                    // SECURITY FIX: Sanitizing output to prevent XSS
+                    echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
+                    unset($_SESSION['error']);
+                    ?>
+                </div>
+            <?php endif; ?>
             <br>
             <div class="header-section">
                 <p>Are you new? <a href="index.php?action=register" class="link-secondary">register here</a>.</h1>

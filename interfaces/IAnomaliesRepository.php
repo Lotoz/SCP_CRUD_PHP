@@ -1,31 +1,49 @@
 <?php
 
 /**
- * 
+ * Interface IAnomaliesRepository
+ * I define the contract for accessing Anomalies data.
  */
 interface IAnomaliesRepository
 {
+    /**
+     * I retrieve all anomalies from the database.
+     * @return array Array of Anomalies objects.
+     */
+    public function getAll();
 
     /**
-     * Mostrar base de datos
-     * hace una consulta a la base de datos y trae todos sus datos
+     * I find a specific anomaly by its ID (VARCHAR).
+     * @param string $id
+     * @return Anomalies|null
      */
-    public function allData();
+    public function getById($id);
 
     /**
-     * Crear nuevo item
+     * I retrieve all anomalies contained in a specific Site.
+     * @param int $siteId
+     * @return array
      */
-    public function createAnomalies(Anomalies $anomalie);
+    public function getBySiteId($siteId);
+
     /**
-     * Editar object
+     * I create a new anomaly record.
+     * @param Anomalies $anomalies
+     * @return bool
      */
-    public function editAnomalies($id);
+    public function create(Anomalies $anomalies);
+
     /**
-     * Eliminar un objeto
+     * I update an existing anomaly.
+     * @param Anomalies $anomalies
+     * @return bool
      */
-    public function deleteAnomalies($id);
+    public function update(Anomalies $anomalies);
+
     /**
-     * Busca un objeto especifico
+     * I delete an anomaly by its ID.
+     * @param string $id
+     * @return bool
      */
-    public function search($id);
+    public function delete($id);
 }

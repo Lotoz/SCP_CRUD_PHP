@@ -4,4 +4,12 @@ Cada conexion se une a su controlador y se maneja desde el index.
 -Agregar controladores JavaScript para cada pagina que use el create.
 https://www.baulphp.com/3-formas-para-cerrar-la-conexion-pdo-de-php/
 
-Agregar las contrasenas con hash al CRUD y cuando salga del CRUD se vea normal
+1. Agregar las contrasenas con hash al CRUD y cuando salga del CRUD se vea normal
+2. Agregar fechas a Task
+3. Agregar doc_extensa a SCP_Wiki y anomalies crud
+4. Mejorar estetica de SCP_Wiki. Cuando den click en la anomalia, abre una pestana secundaria.
+5. Crear Readme con instrucciones para instalar el proyecto y uso.
+6. Agregar video de usando la aplicacion y capturas. (Video en el canal)
+7. Agregar TO DO: Generacion de eventos aleatorios, crear un calendario y que se vean ahi los eventos.
+8. Agregar notificaciones de eventos proximos.
+9. Mejorar la base de datos, agregar mas tablas y relaciones.

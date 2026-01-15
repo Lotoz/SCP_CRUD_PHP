@@ -17,17 +17,11 @@
         /**
          * Constructor - Inicializa la conexión a BD
          */
-        public function __construct()
+        public function __construct(PDO $pdo)
         {
-            $database = new Database();
-            $this->conn = $database->getConnection();
+            $this->conn = $pdo;
         }
-        static function closeConnection(&$conn)
-        {
-            //Revisar si esto esta bien
-            $conn->query('KILL CONNECTION_ID()');
-            $conn = null;
-        }
+
         /**
          * Obtener usuario por email
          * @param string $email Email del usuario a buscar
@@ -45,11 +39,8 @@
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 if ($row) {
-                    //Revisar si esto esta bien
-                    self::closeConnection($this->conn);
                     return $this->mapRowToUser($row);
                 }
-                self::closeConnection($this->conn);
                 return null;
             } catch (PDOException $e) {
                 throw new Exception("Error al buscar usuario: " . $e->getMessage());

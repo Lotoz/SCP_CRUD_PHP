@@ -1,31 +1,52 @@
 <?php
 
-/**
- * 
- */
 interface ITaskRepository
 {
+    /**
+     * Get all tasks (Generic - useful for Admin).
+     * @return array Array of Task objects.
+     */
+    public function getAll();
 
     /**
-     * Mostrar base de datos
-     * hace una consulta a la base de datos y trae todos sus datos
+     * Get all tasks assigned to a specific user.
+     * Essential for the User Dashboard.
+     * @param mixed $userId
+     * @return array Array of Task objects.
      */
-    public function allData();
+    public function getByUserId($userId);
 
     /**
-     * Crear nuevo item
+     * Find a specific task by its ID.
+     * @param int $id
+     * @return Task|null Returns the Task object or null if not found.
      */
-    public function createTask(Task $task);
+    public function getById($id);
+
     /**
-     * Editar object
+     * Get all tasks that are not completed.
+     * @return array Array of Task objects.
      */
-    public function editTask($id);
+    public function getNotCompletedTasks($userId);
     /**
-     * Eliminar un objeto
+     * Create a new task in the database.
+     * @param Task $task
+     * @return bool True on success, false on failure.
      */
-    public function deleteTask($id);
+    public function create(Task $task);
+
     /**
-     * Busca un objeto especifico
+     * Update an existing task.
+     * We pass the whole Task object containing the new data.
+     * @param Task $task
+     * @return bool True on success, false on failure.
      */
-    public function search($id);
+    public function update(Task $task);
+
+    /**
+     * Delete a task by its ID.
+     * @param int $id
+     * @return bool True on success, false on failure.
+     */
+    public function delete($id);
 }

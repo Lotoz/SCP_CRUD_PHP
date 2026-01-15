@@ -1,26 +1,13 @@
 <?php
 
 /**
- * Interfaz para la tabla de ex-empleados
+ * Interface IExEmpleadosRepository
  */
 interface IExEmpleadosRepository
 {
-
-    /**
-     * Mostrar base de datos
-     * hace una consulta a la base de datos y trae todos sus datos
-     */
-    public function allData();
-    /**
-     * Crear nuevo item
-     */
-    public function createExempleados(ExEmpleados $exEmpleados);
-    /**
-     * Editar object
-     */
-    public function editExempleados($id);
-    /**
-     * Eliminar un objeto
-     */
-    public function deleteExempleados($id);
+    public function getAll();
+    public function getById($id);
+    public function create(ExEmpleados $exEmpleados);
+    public function update(ExEmpleados $exEmpleados);
+    public function delete($id);
 }

@@ -166,8 +166,4 @@ class User
     {
         return password_verify($passwordIngresada, $this->password);
     }
-    /**
-     * Descriptador de password, para mostar la password sin hash en el crud
-     */
-    public function desencriptar($password) {}
 }
