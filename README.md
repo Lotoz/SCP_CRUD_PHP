@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="./pictures_README/banner.png" alt="Project Banner" width="600px" height="400px">
+<img src="./pictures_README/banner.png" alt="Project Banner" width="600px" height="800px">
 
 ![Tech Stack](https://skillicons.dev/icons?i=php,mysql,html,css,js,bootstrap,vscode)
 
@@ -76,7 +76,7 @@ Follow these steps to set up the project in your local environment:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/tu-usuario/scp-crud-php.git
+git clone https://github.com/Lotoz/SCP_CRUD_PHP
 ```
 
 ### 2. Configure the Local Server
