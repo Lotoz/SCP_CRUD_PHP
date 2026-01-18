@@ -1,0 +1,89 @@
+/* Estilo base de la tarjeta SCP */
+.scp-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--accent-color);
+    border-radius: 2px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.scp-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: var(--highlight-color);
+}
+
+.card-header {
+    background-color: var(--nav-bg);
+    color: var(--nav-text);
+    border-bottom: 2px solid var(--accent-color);
+}
+
+
+.scp-img-container {
+    position: relative;
+    width: 100%;
+
+    height: 250px;
+
+    overflow: hidden;
+    background-color: #000;
+    border-bottom: 1px solid #ddd;
+}
+
+.scp-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    opacity: 0.9;
+    filter: grayscale(80%) contrast(1.2);
+    transition: filter 0.3s, transform 0.5s;
+}
+
+.scp-card:hover .scp-img {
+    filter: grayscale(0%) contrast(1);
+    transform: scale(1.05);
+ 
+}
+/* Colores de las Clases */
+.scp-class-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #fff;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+}
+
+/* Mapping classes to colors */
+.safe {
+    background-color: #28a745;
+}
+
+.euclid {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.keter {
+    background-color: #dc3545;
+}
+
+.thaumiel {
+    background-color: #007bff;
+}
+
+.neutralized {
+    background-color: #6c757d;
+}
+
+.scp-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+.card-title {
+    color: var(--accent-color);
+}
+

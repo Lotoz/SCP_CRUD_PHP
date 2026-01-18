@@ -40,24 +40,11 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
--- Volcado de datos para la tabla `users`
+-- Gestión de usuarios y permisos
 --
-INSERT INTO `users` (`id`, `password`, `name`, `lastname`, `email`, `rol`, `level`, `theme`, `tryAttempts`, `state`, `creationDate`) VALUES
-('Afton', '$2y$10$0RkS08Ar5f/rdQceioubReKHSQqf585nmx3.f.nNCoZyTKSB/QOga', 'William', 'Afton', 'afton@scp.com', 'cleaner', 1, 'unicorn', 0, 1, '2025-12-19'),
-('Alto_clef', '$2y$10$YERfqb/FAx2QeFWzW1X0a.NWdI8iaeC3JLVccneu3/ew/kT2cKtaO', 'Francis', 'Wojcienchowski', 'alto.clef@scp.com', 'scienct', 3, 'clef', 0, 1, '2025-12-19'),
-('breenaIce', '$2y$10$VJhuLlEtxafg0ljtsCNlzeoMnXT50CBuJVwRz.EvxWerMLq24dymS', 'Breena', 'Icefrost', 'breena.icefrost@scp.com', 'scienct', 4, 'ice', 0, 1, '2025-12-19'),
-('DrGears', '$2y$10$zgNXIY.I4NRYI.LUJnUriedf.h4d.GIg7yON27xyaENhQvv2dZZKq', 'Charles', 'Ogden Gears', 'charles.gears@scp.com', 'scienct', 5, 'gears', 0, 1, '2025-12-19'),
-('Lotoz', '$2y$10$QPCGbTW/lO2/ssTQ9uxQ2.bTZ2dkfFLhbQYrP5njU.7yBA0FQcfv.', 'Lotoz', 'Darken', 'lotoz.scp@scp.com', 'scienct', 6, 'admin', 0, 1, '2025-12-19'),
-('sophieR', '$2y$10$VO1dwpzvkn4FM35Ef1kVb.Z/kXbiIXeOZ2mnKkwFlp0BjHrcRg.PC', 'Sophie Ariadna', 'Scarlett', 'scarlettSophie@scp.com', 'researcher', 2, 'sophie', 0, 1, '2025-12-19');
-
---
--- Gestión de usuarios y permisos (Opcional según entorno)
--- Nota: Esto puede fallar si no tienes permisos de root o si el usuario ya existe.
---
--- CREATE USER IF NOT EXISTS 'view'@'%' IDENTIFIED BY 'tu_contraseña_aqui';
--- GRANT ALL PRIVILEGES ON `scp_data`.* TO `view`@`%`;
--- FLUSH PRIVILEGES;
-
+GRANT SELECT, INSERT, UPDATE, DELETE, FILE ON *.* TO `view`@`localhost` IDENTIFIED BY PASSWORD '*5D4B9AEB6CE62913970923D2B7A5BC15F2199608';
+GRANT ALL PRIVILEGES ON `scp_data`.* TO `view`@`localhost`;
+FLUSH PRIVILEGES;
 
 -- --------------------------------------------------------
 -- NUEVA IMPLEMENTACIÓN DE TABLAS
@@ -80,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `sitio` (
     `ubicacion` TEXT,
     `id_administrador` VARCHAR(25),
     INDEX (`id_administrador`),
-    CONSTRAINT `fk_sitio_admin` FOREIGN KEY (`id_administrador`) REFERENCES `users`(`id`) ON DELETE SET NULL
+    CONSTRAINT `fk_sitio_admin` FOREIGN KEY (`id_administrador`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- Tabla SCP (Las Anomalías)
@@ -94,28 +81,28 @@ CREATE TABLE IF NOT EXISTS `anomalies` (
     `img_url` TEXT,
     `id_sitio` INT,
     INDEX (`id_sitio`),
-    CONSTRAINT `fk_scp_sitio` FOREIGN KEY (`id_sitio`) REFERENCES `sitio`(`id`) ON DELETE SET NULL
+    CONSTRAINT `fk_scp_sitio` FOREIGN KEY (`id_sitio`) REFERENCES `sitio`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
--- Tabla TAREAS ASIGNADAS
+-- Tabla TAREAS
 CREATE TABLE IF NOT EXISTS `tasks` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `description` TEXT NOT NULL,
+    `due_date` DATE DEFAULT NULL,
     `completado` TINYINT(1) DEFAULT 0,
     `id_usuario` VARCHAR(25) NOT NULL,
     INDEX (`id_usuario`),
-    CONSTRAINT `fk_tarea_user` FOREIGN KEY (`id_usuario`) REFERENCES `users`(`id`) ON DELETE CASCADE
+    CONSTRAINT `fk_tarea_user` FOREIGN KEY (`id_usuario`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- Tabla N:M PERSONAL_ASIGNADO
--- CORRECCION: Referencia a la tabla `anomalies` en lugar de `scp`
 CREATE TABLE IF NOT EXISTS `assigned_personnel` (
     `user_id` VARCHAR(25) NOT NULL,
     `scp_id` VARCHAR(20) NOT NULL,
     `role` VARCHAR(50) DEFAULT 'Containment Specialist',
     PRIMARY KEY (`user_id`, `scp_id`),
-    CONSTRAINT `fk_ap_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_ap_scp` FOREIGN KEY (`scp_id`) REFERENCES `anomalies`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    CONSTRAINT `fk_ap_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT `fk_ap_scp` FOREIGN KEY (`scp_id`) REFERENCES `anomalies`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------

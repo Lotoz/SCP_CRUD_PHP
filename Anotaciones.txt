@@ -4,12 +4,32 @@ Cada conexion se une a su controlador y se maneja desde el index.
 -Agregar controladores JavaScript para cada pagina que use el create.
 https://www.baulphp.com/3-formas-para-cerrar-la-conexion-pdo-de-php/
 
-1. Agregar las contrasenas con hash al CRUD y cuando salga del CRUD se vea normal
-2. Agregar fechas a Task
-3. Agregar doc_extensa a SCP_Wiki y anomalies crud
-4. Mejorar estetica de SCP_Wiki. Cuando den click en la anomalia, abre una pestana secundaria.
+4. La estetica de scp se ve mal, mejorarla.
+
 5. Crear Readme con instrucciones para instalar el proyecto y uso.
 6. Agregar video de usando la aplicacion y capturas. (Video en el canal)
 7. Agregar TO DO: Generacion de eventos aleatorios, crear un calendario y que se vean ahi los eventos.
 8. Agregar notificaciones de eventos proximos.
 9. Mejorar la base de datos, agregar mas tablas y relaciones.
+
+
+
+4. SOLUCIÓN AL PROBLEMA DE LAS IMÁGENES (Linux / XAMPP)
+
+El problema de que "no carga imágenes" en Linux (/opt/lampp) es al 99% un tema de permisos de carpeta.
+
+Cuando PHP (XAMPP) se ejecuta, lo hace con un usuario llamado daemon (o www-data). Tú, como usuario, eres dueño de las carpetas. daemon no tiene permiso para escribir (guardar fotos) en tus carpetas.
+
+Debes ejecutar este comando en tu terminal para dar permiso de escritura:
+Bash
+
+# 1. Asegúrate de estar en la carpeta correcta
+cd /opt/lampp/htdocs/SCP_CRUD_PHP/
+
+# 2. Crea la carpeta de imagenes manualmente si no existe (por seguridad)
+mkdir -p views/CRUD/anomalies/assets/img/
+
+# 3. Dale permisos totales (lectura y escritura) a la carpeta de imágenes
+# El -R hace que sea recursivo (afecta a la carpeta y lo que tenga dentro)
+1
+Explicación: El comando chmod 777 permite que cualquiera (incluido el proceso de PHP de XAMPP) pueda guardar archivos ahí. Sin esto, la función move_uploaded_file() de PHP falla silenciosamente o da error de "Permission denied".

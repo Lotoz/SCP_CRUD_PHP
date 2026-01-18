@@ -1,0 +1,82 @@
+/* Estilos específicos para imitar la Wiki SCP */
+.wiki-container {
+    background-color: #f4f4f4;
+    /* Fondo tipo papel/clásico */
+    color: #333;
+    font-family: 'Verdana', sans-serif;
+    /* Fuente clásica de la wiki */
+    padding: 40px;
+    border: 1px solid #999;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    max-width: 1100px;
+    margin: 2rem auto;
+    position: relative;
+}
+
+/* Título principal */
+.wiki-header {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #901;
+    /* El rojo oscuro clásico de los títulos SCP */
+    border-bottom: 3px solid #901;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+
+
+/* Bloque de Imagen flotante a la derecha */
+.scp-image-block {
+    float: right;
+    width: 300px;
+    border: 1px solid #666;
+    background-color: #fff;
+    padding: 5px;
+    margin: 0 0 20px 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.scp-image-block img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #000;
+    display: block;
+}
+
+.scp-image-caption {
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding-top: 5px;
+    color: #444;
+    background: #f0f0f0;
+    margin-top: 2px;
+    border-top: 1px solid #999;
+}
+
+/* Estilos de texto del reporte */
+.report-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.label {
+    font-weight: bold;
+    color: #000;
+}
+
+/* Limpiar floats */
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Botón de volver */
+.back-btn {
+    margin-bottom: 20px;
+}
+

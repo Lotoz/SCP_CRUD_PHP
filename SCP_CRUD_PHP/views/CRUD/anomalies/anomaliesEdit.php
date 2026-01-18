@@ -3,28 +3,7 @@ $pageTitle = "Modify SCP File";
 require_once 'views/templates/header.php';
 ?>
 
-<style>
-    header nav,
-    .logo-area .security-level {
-        display: none;
-    }
-
-    header {
-        justify-content: center;
-        border-bottom: none;
-    }
-
-    body {
-        padding-bottom: 2rem;
-        background-color: var(--bg-color);
-    }
-
-    .form-section {
-        background: var(--card-bg);
-        padding: 20px;
-        border: 1px solid var(--accent-color);
-    }
-</style>
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/CRUD/anomalies/assets/styles/edit.css">
 
 <main class="container mt-4">
     <div class="row justify-content-center">
@@ -34,18 +13,42 @@ require_once 'views/templates/header.php';
                 <h2 class="mb-4" style="font-family: var(--font-mono); color: #ffc107; border-bottom: 2px solid #ffc107;">
                     <i class="fas fa-edit"></i> UPDATE FILE: <?= htmlspecialchars($anomaly->getId()) ?>
                 </h2>
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                        style="font-family: var(--font-mono); border: 2px solid var(--alert-color); color: #000;">
 
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>ERROR-SCP-DATA: </strong>
+                        <?= htmlspecialchars($_SESSION['error']) ?>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php
+                    unset($_SESSION['error']);
+                    ?>
+                <?php endif; ?>
                 <form action="index.php?action=anomalies_update" method="POST" enctype="multipart/form-data" id="createForm">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
-                    <input type="hidden" name="id" value="<?= $anomaly->getId() ?>">
+
+                    <input type="hidden" name="original_id" value="<?= $anomaly->getId() ?>">
+
                     <input type="hidden" name="current_img" value="<?= htmlspecialchars($anomaly->getImgUrl() ?? '') ?>">
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-muted">Item # (Locked)</label>
-                            <input type="text" value="<?= $anomaly->getId() ?>" class="form-control" disabled style="background:#333; color:#aaa;">
+                            <label class="form-label fw-bold">Item # (ID)</label>
+                            <input type="text"
+                                name="id"
+                                value="<?= htmlspecialchars($anomaly->getId()) ?>"
+                                class="form-control"
+                                required
+                                pattern="^SCP-.*$"
+                                title="Must start with 'SCP-'"
+                                style="font-family: var(--font-mono); font-weight: bold;">
+                            <small class="text-muted">Warning: Changing the ID may affect linked records.</small>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Object Class</label>
                             <select name="class" class="form-select" required>
@@ -64,6 +67,15 @@ require_once 'views/templates/header.php';
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Containment Site ID</label>
                             <input type="number" name="id_sitio" value="<?= htmlspecialchars($anomaly->getIdSitio()) ?>" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-muted">Original Database Link</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-link"></i></span>
+                            <input type="url" name="doc_extensa" class="form-control"
+                                value="<?= htmlspecialchars($anomaly->getDocExtensa() ?? '') ?>"
+                                placeholder="https://scp-wiki.wikidot.com/scp-xxx">
                         </div>
                     </div>
 
@@ -108,5 +120,5 @@ require_once 'views/templates/header.php';
     </div>
 </main>
 
-<script src="views/CRUD/assets/js/anomaliesCreate.js"></script>
+<script src="<?php echo BASE_URL; ?>views/CRUD/anomalies/assets/js/anomaliesCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

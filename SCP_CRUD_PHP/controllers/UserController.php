@@ -17,7 +17,6 @@ class UserController
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAdminAuth();
         $usersList = $this->repository->getAll();
-        // RUTA ACTUALIZADA
         require_once 'views/CRUD/users/users.php';
     }
 
@@ -25,7 +24,6 @@ class UserController
     {
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAdminAuth();
-        // RUTA ACTUALIZADA
         require_once 'views/CRUD/users/usersCreate.php';
     }
 
@@ -35,20 +33,42 @@ class UserController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // CSRF Check handled by middleware
-
-            $id = trim($_POST['id']);
-            $name = trim($_POST['name']);
-            $lastname = trim($_POST['lastname']);
-            $email = trim($_POST['email']);
-            $password = $_POST['password'];
-            $rol = $_POST['rol'];
-            $level = (int)$_POST['level'];
-            $theme = $_POST['theme'];
+            // 1. SANITIZACIÓN
+            $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_SPECIAL_CHARS);
+            $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
+            $lastname = filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_SPECIAL_CHARS);
+            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+            $password = $_POST['password'] ?? '';
+            $rol = filter_input(INPUT_POST, 'rol', FILTER_SANITIZE_SPECIAL_CHARS);
+            $level = filter_input(INPUT_POST, 'level', FILTER_VALIDATE_INT);
+            $theme = filter_input(INPUT_POST, 'theme', FILTER_SANITIZE_SPECIAL_CHARS);
             $state = isset($_POST['state']) ? 1 : 0;
 
+            // --- VALIDACIONES CON SESSION ERROR ---
+
+            // 1. Campos obligatorios
             if (empty($id) || empty($password)) {
-                echo "<script>alert('ID and Password are required.'); window.history.back();</script>";
+                $_SESSION['error'] = "MANDATORY FIELDS: Operative ID and Password are required.";
+                // Redirigimos de vuelta al formulario de creación
+                header("Location: index.php?action=users_create");
+                exit;
+            }
+            // Validate ID format: allow only letters, numbers, hyphen and underscore
+            if (!preg_match('/^[a-zA-Z0-9_-]+$/', $id)) {
+                $_SESSION['error'] = 'ID contains invalid characters.';
+                header('Location: index.php?action=users_create');
+                exit();
+            }
+            if ($level === false || $level < 0 || $level > 5 || $level > 10) {
+                $_SESSION['error'] = "INVALID FORMAT: The clearance level must be an integer between 0 and 5.";
+                header("Location: index.php?action=users_create");
+                exit;
+            }
+
+            // 2. Formato de Email
+            if (!$email) {
+                $_SESSION['error'] = "INVALID FORMAT: The provided email address is not valid.";
+                header("Location: index.php?action=users_create");
                 exit;
             }
 
@@ -57,30 +77,43 @@ class UserController
 
             try {
                 $this->repository->create($user);
+
+                // ÉXITO: Mantenemos el JS para cerrar la ventana popup
                 echo "<script>
                         alert('Personnel registered successfully.');
                         if(window.opener){ window.opener.location.reload(); }
                         window.close();
                       </script>";
+            } catch (PDOException $e) {
+                // Error específico de duplicados (SQLState 23000)
+                if ($e->getCode() == '23000') {
+                    $_SESSION['error'] = "DUPLICATE ENTRY: The ID '$id' is already in use.";
+                } else {
+                    $_SESSION['error'] = "DATABASE ERROR: " . $e->getMessage();
+                }
+                header("Location: index.php?action=users_create");
+                exit;
             } catch (Exception $e) {
-                echo "<script>alert('Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                $_SESSION['error'] = "SYSTEM ERROR: " . $e->getMessage();
+                header("Location: index.php?action=users_create");
+                exit;
             }
             exit;
         }
     }
 
-    // --- EDICIÓN ---
     public function edit($id)
-
     {
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAdminAuth();
-        $user = $this->repository->getById($id);
 
+        $id = htmlspecialchars($id);
+
+        $user = $this->repository->getById($id);
         if ($user) {
-            // RUTA ACTUALIZADA
             require_once 'views/CRUD/users/usersEdit.php';
         } else {
+            // Si no encuentra el usuario, cerramos la ventana
             echo "<script>alert('User not found.'); window.close();</script>";
         }
     }
@@ -90,45 +123,88 @@ class UserController
         $this->verifyAdminAuth();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id']; // Read only
-            $name = $_POST['name'];
-            $lastname = $_POST['lastname'];
-            $email = $_POST['email'];
-            $password = $_POST['password']; // Si está vacío, el repo lo ignora
-            $rol = $_POST['rol'];
-            $level = $_POST['level'];
-            $theme = $_POST['theme'];
+
+            // 1. SANITIZACIÓN
+            $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_SPECIAL_CHARS);
+            $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
+            $lastname = filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_SPECIAL_CHARS);
+
+            // Validar Email
+            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+
+            // Contraseña (vacía significa "no cambiar")
+            $password = $_POST['password'] ?? '';
+
+            $rol = filter_input(INPUT_POST, 'rol', FILTER_SANITIZE_SPECIAL_CHARS);
+            $level = filter_input(INPUT_POST, 'level', FILTER_VALIDATE_INT);
+            $theme = filter_input(INPUT_POST, 'theme', FILTER_SANITIZE_SPECIAL_CHARS);
             $state = isset($_POST['state']) ? 1 : 0;
 
+
+            // 1. Validar Email
+            if (!$email) {
+                $_SESSION['error'] = "INVALID FORMAT: The provided email address is not valid.";
+                // IMPORTANTE: Debemos devolver el ID para saber a quién estábamos editando
+                header("Location: index.php?action=users_edit&id=" . urlencode($id));
+                exit;
+            }
+            if ($level === false || $level < 0 || $level > 5 || $level > 10) {
+                $_SESSION['error'] = "INVALID FORMAT: The clearance level must be an integer between 0 and 5.";
+                header("Location: index.php?action=users_edit&id=" . urlencode($id));
+                exit;
+            }
+            // Validate ID format: allow only letters, numbers, hyphen and underscore
+            if (!preg_match('/^[a-zA-Z0-9_-]+$/', $id)) {
+                $_SESSION['error'] = 'ID contains invalid characters.';
+                header("Location: index.php?action=users_edit&id=" . urlencode($id));
+                exit();
+            }
+
+            // 2. Crear objeto usuario
             $user = new User($id, $name, $lastname, $email, $password, $level, $rol, $theme);
             $user->setstate($state);
 
             try {
+                // Intentar actualizar en BD
                 $this->repository->update($user);
+
+                // ÉXITO: Mostramos alerta y cerramos ventana (comportamiento JS)
                 echo "<script>
-                        alert('Personnel file updated.');
+                        alert('Personnel file updated successfully.');
                         if(window.opener){ window.opener.location.reload(); }
                         window.close();
                       </script>";
+            } catch (PDOException $e) {
+                // Capturar errores SQL (ej: si cambias el email a uno que ya existe)
+                $_SESSION['error'] = "DATABASE ERROR: " . $e->getMessage();
+                header("Location: index.php?action=users_edit&id=" . urlencode($id));
+                exit;
             } catch (Exception $e) {
-                echo "<script>alert('Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                // Errores genéricos
+                $_SESSION['error'] = "UPDATE FAILED: " . $e->getMessage();
+                header("Location: index.php?action=users_edit&id=" . urlencode($id));
+                exit;
             }
             exit;
         }
     }
 
-    // --- DELETE SEGURO (POST) ---
     public function delete()
     {
         $this->verifyAdminAuth();
 
-        $id = $_POST['id'] ?? null;
+        $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_SPECIAL_CHARS);
 
-        // Prevent deleting yourself
         if ($id === $_SESSION['user_id']) {
-            $_SESSION['error'] = "Protocol Violation: You cannot expunge your own record.";
+            $_SESSION['error'] = "PROTOCOL VIOLATION: You cannot expunge your own record.";
         } else if ($id) {
-            $this->repository->delete($id);
+            try {
+                $this->repository->delete($id);
+                // Opcional: Mensaje de éxito en sesión si quieres mostrarlo en el index
+                // $_SESSION['success'] = "User deleted successfully."; 
+            } catch (Exception $e) {
+                $_SESSION['error'] = "DELETE FAILED: " . $e->getMessage();
+            }
         }
 
         header('Location: index.php?action=users_index');
@@ -138,7 +214,7 @@ class UserController
     private function verifyAdminAuth()
     {
         if (!isset($_SESSION['user_id']) || $_SESSION['level'] < 5) {
-            $_SESSION['error'] = "Access Denied: Clearance Level 5 required.";
+            $_SESSION['error'] = "ACCESS DENIED: Clearance Level 5 required.";
             header('Location: index.php?action=dashboard');
             exit;
         }

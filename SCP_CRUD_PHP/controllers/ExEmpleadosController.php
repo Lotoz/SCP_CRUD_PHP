@@ -3,6 +3,13 @@
 require_once 'models/ExEmpleados.php';
 require_once 'interfaces/IExEmpleadosRepository.php';
 
+/**
+ * ExEmpleadosController
+ *
+ * Controller for managing historical employee records (ex-employees). This is
+ * typically an admin-only area used to review and purge historical data. The
+ * controller provides a read-only listing and a permanent delete operation.
+ */
 class ExEmpleadosController
 {
     private $repository;
@@ -13,7 +20,8 @@ class ExEmpleadosController
     }
 
     /**
-     * Solo mostramos el historial.
+     * Show the archive/history of ex-employees.
+     * A CSRF token is generated for any potential actions initiated from the view.
      */
     public function index()
     {
@@ -24,12 +32,13 @@ class ExEmpleadosController
     }
 
     /**
-     * Eliminar definitivamente del historial (Purgar).
+     * Permanently delete an historical record (purge).
+     * Security: action must come from POST to avoid accidental deletes via GET.
      */
     public function delete()
     {
         $this->verifyAuth();
-        // Seguridad: POST
+        // Read id from POST body for safety
         $id = $_POST['id'] ?? null;
         if ($id) {
             $this->repository->delete($id);
@@ -41,7 +50,7 @@ class ExEmpleadosController
 
     private function verifyAuth()
     {
-        // Solo Admin o Nivel 5 puede ver archivos históricos
+        // Only admins or users with clearance level 5 may access these archives
         if (!isset($_SESSION['user_id']) || $_SESSION['level'] < 5) {
             $_SESSION['error'] = "Access Denied: Level 5 Clearance required for Archives.";
             header('Location: index.php?action=dashboard');

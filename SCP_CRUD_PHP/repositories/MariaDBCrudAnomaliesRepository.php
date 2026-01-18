@@ -73,9 +73,10 @@ class MariaDBCrudAnomaliesRepository implements IAnomaliesRepository
         ]);
     }
 
-    public function update(Anomalies $anomalies)
+    public function update(Anomalies $anomalies, $originalId)
     {
         $sql = "UPDATE anomalies SET 
+                id = :new_id, 
                 nickname = :nick, 
                 class = :class, 
                 contencion = :cont, 
@@ -83,20 +84,23 @@ class MariaDBCrudAnomaliesRepository implements IAnomaliesRepository
                 doc_extensa = :doc, 
                 img_url = :img, 
                 id_sitio = :site 
-                WHERE id = :id";
+                WHERE id = :old_id";
 
         $stmt = $this->pdo->prepare($sql);
+
         return $stmt->execute([
-            ':nick'  => $anomalies->getNickname(),
-            ':class' => $anomalies->getClass(),
-            ':cont'  => $anomalies->getContencion(),
-            ':desc'  => $anomalies->getDescription(),
-            ':doc'   => $anomalies->getDocExtensa(),
-            ':img'   => $anomalies->getImgUrl(),
-            ':site'  => $anomalies->getIdSitio(),
-            ':id'    => $anomalies->getId()
+            ':new_id' => $anomalies->getId(),
+            ':nick'   => $anomalies->getNickname(),
+            ':class'  => $anomalies->getClass(),
+            ':cont'   => $anomalies->getContencion(),
+            ':desc'   => $anomalies->getDescription(),
+            ':doc'    => $anomalies->getDocExtensa(),
+            ':img'    => $anomalies->getImgUrl(),
+            ':site'   => $anomalies->getIdSitio(),
+            ':old_id' => $originalId
         ]);
     }
+
 
     public function delete($id)
     {

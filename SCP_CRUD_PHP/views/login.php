@@ -48,7 +48,6 @@
                 <div class="alert alert-danger" role="alert">
                     <i class="fas fa-exclamation-triangle"></i>
                     <?php
-                    // SECURITY FIX: Sanitizing output to prevent XSS
                     echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
                     unset($_SESSION['error']);
                     ?>

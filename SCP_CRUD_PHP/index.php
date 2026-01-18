@@ -67,16 +67,16 @@ $anomaliesController = new AnomaliesController($anomaliesRepository);
 // 4. User CRUD Setup
 $crudUserRepository = new MariaDBCrudUserRepository($pdo);
 $userController = new UserController($crudUserRepository);
-//5.sites CRUD Setup
+// 5. Sites CRUD Setup
 $siteRepository = new MariaDBCrudSiteRepository($pdo);
 $siteController = new SiteController($siteRepository);
-#6. exEmpleados CRUD Setup
+// 6. Former Employees (ExEmpleados) CRUD Setup
 $exRepository = new MariaDBCrudExEmpleadosRepository($pdo);
 $exController = new ExEmpleadosController($exRepository);
-//7. Assigned Personnel CRUD Setup
+// 7. Assigned Personnel CRUD Setup
 $assignedRepo = new MariaDBCrudAssignedPersonnelRepository($pdo);
 $assignedController = new AssignedPersonnelController($assignedRepo);
-//8. Wiki Setup
+// 8. Wiki Setup
 $wikiController = new WikiController($anomaliesRepository);
 
 
@@ -85,16 +85,16 @@ $wikiController = new WikiController($anomaliesRepository);
 // SECURITY MIDDLEWARE (Global)
 // =======================
 
-// 1. Protección CSRF Global para POST
+// 1. Global CSRF protection for POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_POST['csrf_token'] ?? '';
 
     if (!SessionManager::verifyCSRFToken($token)) {
-        // Logueamos el intento de ataque
-        error_log("Posible ataque CSRF detectado desde IP: " . $_SERVER['REMOTE_ADDR']);
+        // Log the attack attempt
+        error_log("Possible CSRF attack detected from IP: " . $_SERVER['REMOTE_ADDR']);
 
-        // Detenemos la ejecución. Nadie pasa de aquí sin token.
-        die("Error de Seguridad: La sesión ha expirado o el token es inválido. Por favor, recargue la página.");
+        // Halt execution. No one passes without a valid token.
+        die("Security Error: Session expired or invalid token. Please reload the page.");
     }
 }
 
@@ -243,9 +243,12 @@ if (!isset($_REQUEST['action'])) {
         case 'assigned_delete':
             $assignedController->delete();
             break;
-        // ------- WikiSCPController --------    
+        // ------- Wiki Controller --------
         case 'scpwiki':
             $wikiController->index();
+            break;
+        case 'wiki_show':
+            $wikiController->show();
             break;
         default:
             $authController->login();

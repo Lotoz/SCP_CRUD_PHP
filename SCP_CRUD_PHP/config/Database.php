@@ -3,7 +3,14 @@
 require_once 'DatabaseConnectionException.php';
 
 /**
- * Database conexion a la base de datos
+ * Database
+ *
+ * Responsible for creating and returning a configured PDO connection to the
+ * application's MySQL database. This class centralizes connection details
+ * (host, database name, credentials) so other parts of the app can simply
+ * request a PDO instance. On failure it throws a DatabaseConnectionException
+ * that higher layers can catch and handle (for logging, retries, or graceful
+ * error pages).
  */
 class Database
 {
@@ -14,29 +21,39 @@ class Database
     private $conn;
 
     /**
-     * Obtener la conexión a la base de datos
-     * @return PDO Conexión PDO a la base de datos
-     * @throws DatabaseConnectionException Si hay error de conexión
+     * Get a PDO connection to the database.
+     *
+     * This method initializes a PDO instance configured to:
+     * - throw exceptions on errors (PDO::ERRMODE_EXCEPTION)
+     * - use UTF-8 for the connection
+     *
+     * Returning a single connection from here keeps credentials and connection
+     * logic in one place and simplifies testing or swapping the driver later.
+     *
+     * @return PDO The active PDO connection
+     * @throws DatabaseConnectionException If a PDOException occurs while connecting
      */
     public function getConnection()
     {
         $this->conn = null;
 
         try {
+            // Build PDO with the configured parameters
             $this->conn = new PDO(
                 "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
                 $this->username,
                 $this->password
             );
 
-            // Configurar PDO para lanzar excepciones
+            // Configure PDO to throw exceptions on errors so callers can catch them
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Establecer charset UTF-8
+            // Ensure connection uses UTF-8 encoding
             $this->conn->exec("SET NAMES utf8");
         } catch (PDOException $e) {
+            // Wrap and rethrow with a domain-specific exception
             throw new DatabaseConnectionException(
-                "Error de conexión a BD: " . $e->getMessage()
+                "Database connection error: " . $e->getMessage()
             );
         }
 

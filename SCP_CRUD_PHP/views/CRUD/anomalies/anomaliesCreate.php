@@ -3,28 +3,7 @@ $pageTitle = "New SCP Entry";
 require_once 'views/templates/header.php';
 ?>
 
-<style>
-    header nav,
-    .logo-area .security-level {
-        display: none;
-    }
-
-    header {
-        justify-content: center;
-        border-bottom: none;
-    }
-
-    body {
-        padding-bottom: 2rem;
-        background-color: var(--bg-color);
-    }
-
-    .form-section {
-        background: var(--card-bg);
-        padding: 20px;
-        border: 1px solid var(--accent-color);
-    }
-</style>
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/CRUD/anomalies/assets/styles/create.css">
 
 <main class="container mt-4">
     <div class="row justify-content-center">
@@ -42,8 +21,16 @@ require_once 'views/templates/header.php';
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Item # (ID)</label>
-                            <input type="text" name="id" class="form-control" placeholder="SCP-XXX" required
+
+                            <input type="text" name="id" id="idInput" class="form-control"
+                                placeholder="SCP-XXX" required
+                                pattern="^SCP-.*$"
+                                title="Must start with 'SCP-'"
                                 style="font-family: var(--font-mono); font-weight: bold;">
+
+                            <div class="form-text text-danger" id="idHelp" style="display:none;">
+                                Format invalid. Must start with "SCP-".
+                            </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Object Class</label>
@@ -64,6 +51,15 @@ require_once 'views/templates/header.php';
                             <label class="form-label">Containment Site ID</label>
                             <input type="number" name="id_sitio" class="form-control" placeholder="Example: 19">
                         </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-muted">Original Database Link (Extended Doc)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-link"></i></span>
+                            <input type="url" name="doc_extensa" class="form-control"
+                                placeholder="https://scp-wiki.wikidot.com/scp-xxx">
+                        </div>
+                        <div class="form-text">Leave empty if no external documentation exists.</div>
                     </div>
 
                     <div class="mb-3 p-3" style="background: rgba(0,0,0,0.05); border-radius: 5px;">
@@ -100,5 +96,5 @@ require_once 'views/templates/header.php';
     </div>
 </main>
 
-<script src="views/CRUD/assets/js/anomaliesCreate.js"></script>
+<script src="<?php echo BASE_URL; ?>views/CRUD/anomalies/assets/js/anomaliesCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

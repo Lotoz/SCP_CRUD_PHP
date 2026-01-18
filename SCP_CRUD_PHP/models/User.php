@@ -1,8 +1,9 @@
 <?php
 
 /**
- * Modelo User - Representa un usuario en la base de datos
- * Contiene solo propiedades y getters/setters, no lógica de BD
+ * User model class representing a user entity in the database.
+ * This class encapsulates user properties and provides getter/setter methods,
+ * without containing any database interaction logic.
  */
 class User
 {
@@ -20,7 +21,7 @@ class User
 
 
     /**
-     * Constructor
+     * Constructor for initializing a User object.
      */
     public function __construct($id = null, $name = '', $lastname = '', $email = '', $password = '', $level = null, $rol = '', $theme = 'gears')
     {
@@ -37,7 +38,7 @@ class User
         $this->creationDate = date('Y-m-d H:i:s');
     }
 
-    // ==================== GETTERS ====================
+    // ==================== GETTER METHODS ====================
 
     public function getId()
     {
@@ -98,7 +99,7 @@ class User
         return $this->creationDate;
     }
 
-    // ==================== SETTERS ====================
+    // ==================== SETTER METHODS ====================
 
     public function setId($id)
     {
@@ -155,12 +156,12 @@ class User
     }
 
 
-    // ==================== MÉTODOS DE CLASE ====================
+    // ==================== CLASS METHODS ====================
 
     /**
-     * Verificar si la contraseña coincide (considerando hash)
-     * @param string $passwordIngresada La contraseña a verificar
-     * @return bool true si coincide
+     * Verifies if the provided password matches the user's hashed password.
+     * @param string $passwordIngresada The password to verify
+     * @return bool True if the password matches, false otherwise
      */
     public function verificarPassword($passwordIngresada)
     {

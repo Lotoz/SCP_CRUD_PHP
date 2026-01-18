@@ -12,42 +12,32 @@ class SiteController
         $this->repository = $repository;
     }
 
-    /**
-     * Muestra la tabla principal de sitios.
-     */
     public function index()
     {
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
         $sitesList = $this->repository->getAll();
-        // RUTA ACTUALIZADA A LA CARPETA
         require_once 'views/CRUD/sites/sites.php';
     }
 
-    /**
-     * Muestra el popup de creación.
-     */
     public function create()
     {
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
-        // RUTA ACTUALIZADA
         require_once 'views/CRUD/sites/sitesCreate.php';
     }
 
-    /**
-     * Procesa la creación.
-     */
     public function store()
     {
         $this->verifyAuth();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // El Middleware en index.php ya valida CSRF, pero por si acaso.
 
-            $name = trim($_POST['name_sitio']);
-            $ubicacion = trim($_POST['ubicacion']);
-            $adminId = !empty($_POST['id_administrador']) ? trim($_POST['id_administrador']) : null;
+            // 1. SANITIZACIÓN
+            $name = filter_input(INPUT_POST, 'name_sitio', FILTER_SANITIZE_SPECIAL_CHARS);
+            $ubicacion = filter_input(INPUT_POST, 'ubicacion', FILTER_SANITIZE_SPECIAL_CHARS);
+            $adminId = filter_input(INPUT_POST, 'id_administrador', FILTER_SANITIZE_SPECIAL_CHARS);
+            $adminId = !empty($adminId) ? $adminId : null;
 
             if (empty($name) || empty($ubicacion)) {
                 echo "<script>alert('Error: Name and Location are required.'); window.history.back();</script>";
@@ -59,25 +49,27 @@ class SiteController
             try {
                 $this->repository->create($site);
                 echo "<script>
-                        // Feedback visual y cierre
                         alert('Containment Site established successfully.');
                         if(window.opener){ window.opener.location.reload(); }
                         window.close();
                       </script>";
             } catch (Exception $e) {
-                echo "<script>alert('Database Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                echo "<script>alert('Database Error: " . addslashes(htmlspecialchars($e->getMessage())) . "'); window.history.back();</script>";
             }
             exit;
         }
     }
 
-    /**
-     * Muestra el popup de edición con datos cargados.
-     */
     public function edit($id)
     {
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
+
+        // ID de sitio suele ser entero
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            echo "<script>alert('Invalid Site ID.'); window.close();</script>";
+            exit;
+        }
 
         $site = $this->repository->getById($id);
 
@@ -86,26 +78,23 @@ class SiteController
             exit;
         }
 
-        // RUTA ACTUALIZADA
         require_once 'views/CRUD/sites/sitesEdit.php';
     }
 
-    /**
-     * Procesa la actualización.
-     */
     public function update()
     {
         $this->verifyAuth();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id'];
-            $name = trim($_POST['name_sitio']);
-            $ubicacion = trim($_POST['ubicacion']);
-            $adminId = !empty($_POST['id_administrador']) ? trim($_POST['id_administrador']) : null;
 
-            // Validación básica
-            if (empty($name) || empty($ubicacion)) {
-                echo "<script>alert('Name and Location are required.'); window.history.back();</script>";
+            $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+            $name = filter_input(INPUT_POST, 'name_sitio', FILTER_SANITIZE_SPECIAL_CHARS);
+            $ubicacion = filter_input(INPUT_POST, 'ubicacion', FILTER_SANITIZE_SPECIAL_CHARS);
+            $adminId = filter_input(INPUT_POST, 'id_administrador', FILTER_SANITIZE_SPECIAL_CHARS);
+            $adminId = !empty($adminId) ? $adminId : null;
+
+            if (!$id || empty($name) || empty($ubicacion)) {
+                echo "<script>alert('Error: Invalid Data.'); window.history.back();</script>";
                 exit;
             }
 
@@ -119,21 +108,17 @@ class SiteController
                         window.close();
                       </script>";
             } catch (Exception $e) {
-                echo "<script>alert('Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                echo "<script>alert('Error: " . addslashes(htmlspecialchars($e->getMessage())) . "'); window.history.back();</script>";
             }
             exit;
         }
     }
 
-    /**
-     * Elimina el sitio de forma segura (POST).
-     */
     public function delete()
     {
         $this->verifyAuth();
 
-        // Leemos del POST, no del argumento de función
-        $id = $_POST['id'] ?? null;
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 
         if ($id) {
             $this->repository->delete($id);

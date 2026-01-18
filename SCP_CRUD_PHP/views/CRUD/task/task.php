@@ -32,7 +32,8 @@ require_once 'views/templates/header.php';
                     <thead style="background-color: var(--nav-bg); color: var(--nav-text); font-family: var(--font-mono);">
                         <tr>
                             <th style="width: 10%;">ID</th>
-                            <th style="width: 60%;">Directive / Description</th>
+                            <th style="width: 45%;">Directive / Description</th>
+                            <th style="width: 15%;">Target Date</th>
                             <th style="width: 15%;">Status</th>
                             <th style="width: 15%;" class="text-end">Actions</th>
                         </tr>
@@ -40,7 +41,7 @@ require_once 'views/templates/header.php';
                     <tbody style="font-family: var(--font-main); color: var(--text-color);">
                         <?php if (empty($tasks)): ?>
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">
+                                <td colspan="5" class="text-center py-4 text-muted">
                                     <i class="fas fa-check-circle"></i> No pending tasks. You are currently idle.
                                 </td>
                             </tr>
@@ -55,6 +56,15 @@ require_once 'views/templates/header.php';
                                         <?= nl2br(htmlspecialchars($task->getDescription())) ?>
                                     </td>
 
+                                    <td style="font-family: var(--font-mono);">
+                                        <?php if ($task->getDueDate()): ?>
+                                            <i class="far fa-calendar-alt text-muted"></i>
+                                            <?= htmlspecialchars($task->getDueDate()) ?>
+                                        <?php else: ?>
+                                            <span class="text-muted small">-- No Deadline --</span>
+                                        <?php endif; ?>
+                                    </td>
+
                                     <td>
                                         <?php if ($task->isCompleted()): ?>
                                             <span class="badge bg-success" style="font-family: var(--font-mono);">COMPLETED</span>
@@ -65,22 +75,16 @@ require_once 'views/templates/header.php';
 
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-
-                                            <button type="button"
-                                                class="btn btn-sm btn-outline-secondary"
-                                                onclick="openEditTask(<?= $task->getId() ?>)"
-                                                title="Update Status">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                onclick="openEditTask(<?= $task->getId() ?>)" title="Update Status">
                                                 <i class="fas fa-edit"></i>
                                             </button>
 
                                             <form action="index.php?action=task_delete" method="POST" style="display:inline;">
                                                 <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                                                 <input type="hidden" name="id" value="<?= $task->getId() ?>">
-
-                                                <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Confirm: Remove this task from your log?');"
-                                                    title="Remove Task">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Confirm: Remove this task?');">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
@@ -95,7 +99,6 @@ require_once 'views/templates/header.php';
         </div>
     </div>
 </main>
-
 <script>
     const popupFeatures = "width=600,height=500,resizable=yes,scrollbars=yes";
 
@@ -111,5 +114,4 @@ require_once 'views/templates/header.php';
         window.open(`index.php?action=task_edit&id=${id}`, 'EditTask', `${popupFeatures},top=${top},left=${left}`);
     }
 </script>
-
 <?php require_once 'views/templates/footer.php'; ?>

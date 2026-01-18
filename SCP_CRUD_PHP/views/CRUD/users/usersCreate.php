@@ -34,7 +34,18 @@ require_once 'views/templates/header.php';
                 <h2 class="mb-4" style="font-family: var(--font-mono); color: var(--highlight-color); border-bottom: 2px solid var(--accent-color);">
                     <i class="fas fa-id-card"></i> PERSONNEL RECRUITMENT FORM
                 </h2>
-
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                        style="border: 1px solid red; color: #000;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>ERROR:</strong>
+                        <?php
+                        echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
+                        unset($_SESSION['error']);
+                        ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
                 <form action="index.php?action=users_store" method="POST" id="createUserForm">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
@@ -48,7 +59,15 @@ require_once 'views/templates/header.php';
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Initial Password</label>
-                            <input type="password" name="password" id="password" class="form-control">
+
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control">
+
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword"
+                                    style="border-color: #ced4da; /* O usa var(--accent-color) si prefieres borde de color */">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                             <div id="errorPassword" hidden></div>
                         </div>
 
@@ -95,6 +114,7 @@ require_once 'views/templates/header.php';
                                 <option value="security">Security</option>
                                 <option value="scienct">Scientist</option>
                                 <option value="admin">Administrator</option>
+                                <option value="class-d">Class-D</option>
                             </select>
                         </div>
                     </div>
@@ -118,5 +138,5 @@ require_once 'views/templates/header.php';
     </div>
 </main>
 
-<script src="views/CRUD/assets/js/usersCreate.js"></script>
+<script src="<?php echo BASE_URL; ?>views/CRUD/users/assets/js/usersCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

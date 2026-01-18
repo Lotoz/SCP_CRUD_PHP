@@ -9,7 +9,7 @@ if (!isset($anomaliesList)) {
 $pageTitle = "SCP Foundation Database - Access Clearance Verified";
 require_once 'views/templates/header.php';
 ?>
-
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/wiki/assets/styles/detail.css">
 <main class="container my-5">
 
     <div class="row mb-4">
@@ -59,7 +59,7 @@ require_once 'views/templates/header.php';
 
                         <div class="scp-img-container">
                             <?php if ($scp->hasImage()): ?>
-                                <img src="<?php echo htmlspecialchars($scp->getImgUrl()); ?>"
+                                <img src="<?php echo BASE_URL . htmlspecialchars($scp->getImgUrl()); ?>"
                                     alt="<?php echo htmlspecialchars($scp->getNickname()); ?>"
                                     class="card-img-top scp-img">
                             <?php else: ?>
@@ -69,7 +69,9 @@ require_once 'views/templates/header.php';
                             <?php endif; ?>
 
                             <div class="overlay">
-                                <span>ACCESS FILE</span>
+                                <a href="index.php?action=wiki_show&id=<?php echo $scp->getId(); ?>" class="text-white text-decoration-none stretched-link">
+                                    ACCESS FILE
+                                </a>
                             </div>
                         </div>
 
@@ -88,16 +90,10 @@ require_once 'views/templates/header.php';
                         </div>
 
                         <div class="card-footer bg-transparent border-top-0 pb-3">
-                            <?php if ($scp->getDocExtensa()): ?>
-                                <a href="<?php echo htmlspecialchars($scp->getDocExtensa()); ?>" target="_blank"
-                                    class="btn btn-outline-dark w-100" style="font-family: 'Share Tech Mono';">
-                                    [ OPEN EXTENDED DOC ] <i class="fas fa-external-link-alt"></i>
-                                </a>
-                            <?php else: ?>
-                                <button class="btn btn-outline-secondary w-100" disabled style="font-family: 'Share Tech Mono';">
-                                    [ DATA EXPUNGED ]
-                                </button>
-                            <?php endif; ?>
+                            <a href="index.php?action=wiki_show&id=<?php echo $scp->getId(); ?>"
+                                class="btn btn-outline-dark w-100" style="font-family: 'Share Tech Mono';">
+                                ACCESS FILE DATA <i class="fas fa-file-alt"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -120,90 +116,5 @@ require_once 'views/templates/header.php';
     <script src="<?php echo BASE_URL; ?>views/assets/js/scpwiki.js"></script>
 </main>
 
-<style>
-    /* Estilo base de la tarjeta SCP */
-    .scp-card {
-        background-color: var(--card-bg);
-        border: 1px solid var(--accent-color);
-        border-radius: 2px;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .scp-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        border-color: var(--highlight-color);
-    }
-
-    .card-header {
-        background-color: var(--nav-bg);
-        color: var(--nav-text);
-        border-bottom: 2px solid var(--accent-color);
-    }
-
-    /* Imagen con efecto de hover */
-    .scp-img-container {
-        position: relative;
-        height: 200px;
-        overflow: hidden;
-        background-color: #000;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .scp-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0.9;
-        filter: grayscale(80%) contrast(1.2);
-        transition: filter 0.3s;
-    }
-
-    .scp-card:hover .scp-img {
-        filter: grayscale(0%) contrast(1);
-    }
-
-    /* Colores de las Clases */
-    .scp-class-badge {
-        font-family: 'Share Tech Mono', monospace;
-        font-size: 0.9rem;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        color: #fff;
-        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-        padding: 5px 10px;
-    }
-
-    /* Mapping classes to colors */
-    .safe {
-        background-color: #28a745;
-    }
-
-    .euclid {
-        background-color: #ffc107;
-        color: #000;
-    }
-
-    .keter {
-        background-color: #dc3545;
-    }
-
-    .thaumiel {
-        background-color: #007bff;
-    }
-
-    .neutralized {
-        background-color: #6c757d;
-    }
-
-    .scp-description {
-        font-size: 0.9rem;
-        line-height: 1.5;
-        color: var(--text-color);
-    }
-
-    .card-title {
-        color: var(--accent-color);
-    }
-</style>
 
 <?php require_once 'views/templates/footer.php'; ?>

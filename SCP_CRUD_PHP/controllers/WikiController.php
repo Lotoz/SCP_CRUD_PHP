@@ -13,67 +13,83 @@ class WikiController
     }
 
     /**
-     * I show the public Wiki (filtered by clearance).
+     * Muestra la lista de anomalías accesibles (Grid)
      */
     public function index()
     {
-        $csrf_token = SessionManager::generateCSRFToken();
-        // 1. I verify the session
+        // 1. Verificar sesión
         if (!isset($_SESSION['user_id'])) {
             header('Location: index.php?action=login');
             exit;
         }
 
         $userLevel = (int)$_SESSION['level'];
-
-        // 2. I get ALL anomalies from DB
         $allAnomalies = $this->repository->getAll();
-
-        // 3. I filter them based on Security Clearance
         $accessibleAnomalies = [];
 
+        // Filtramos usando la función auxiliar
         foreach ($allAnomalies as $scp) {
-            $class = strtoupper($scp->getClass()); // SAFE, EUCLID, KETER...
-
-            // Logic Rules:
-            // Level 5 sees everything.
-            if ($userLevel >= 5) {
+            if ($this->canAccess($scp, $userLevel)) {
                 $accessibleAnomalies[] = $scp;
-                continue;
-            }
-
-            // Logic for lower levels
-            switch ($class) {
-                case 'SAFE':
-                    // Everyone (Level 1+) sees Safe
-                    if ($userLevel >= 1) $accessibleAnomalies[] = $scp;
-                    break;
-
-                case 'EUCLID':
-                    // Level 2, 3, 4 see Euclid
-                    if ($userLevel >= 2) $accessibleAnomalies[] = $scp;
-                    break;
-
-                case 'KETER':
-                    // Level 3, 4 see Keter
-                    if ($userLevel >= 3) $accessibleAnomalies[] = $scp;
-                    break;
-
-                case 'THAUMIEL':
-                    // Usually only Level 4 or 5
-                    if ($userLevel >= 4) $accessibleAnomalies[] = $scp;
-                    break;
-
-                default:
-                    // Unknown classes only for Level 4+
-                    if ($userLevel >= 4) $accessibleAnomalies[] = $scp;
-                    break;
             }
         }
 
-        // 4. I pass the filtered list to the view
+        // Pasamos la variable a la vista
         $anomaliesList = $accessibleAnomalies;
+        require_once 'views/wiki/scpwiki.php';
+    }
 
-        require_once 'views/scpwiki.php';
+    /**
+     * Muestra el detalle de un SCP específico (Estilo Wiki)
+     */
+    public function show()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: index.php?action=login');
+            exit;
+        }
+
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            header('Location: index.php?action=wiki_index');
+            exit;
+        }
+
+        // Buscamos el SCP
+        $scp = $this->repository->getById($id);
+
+        // Si no existe o el usuario no tiene nivel suficiente, denegamos
+        if (!$scp || !$this->canAccess($scp, (int)$_SESSION['level'])) {
+            echo "<script>alert('ACCESS DENIED: Insufficient Security Clearance for this file.'); window.location.href='index.php?action=wiki_index';</script>";
+            exit;
+        }
+
+        // Cargamos la vista de detalle
+        require_once 'views/wiki/detail.php';
+    }
+
+    /**
+     * Lógica centralizada de permisos (Nivel vs Clase)
+     */
+    private function canAccess($scp, $userLevel)
+    {
+        // Nivel 5 ve todo
+        if ($userLevel >= 5) return true;
+
+        $class = strtoupper($scp->getClass());
+
+        switch ($class) {
+            case 'SAFE':
+                return $userLevel >= 1;
+            case 'EUCLID':
+                return $userLevel >= 2;
+            case 'KETER':
+                return $userLevel >= 3;
+            case 'THAUMIEL':
+                return $userLevel >= 4;
+            default:
+                // Clases exóticas o desconocidas requieren nivel 4
+                return $userLevel >= 4;
+        }
     }
 }

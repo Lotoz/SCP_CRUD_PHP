@@ -17,16 +17,13 @@ class AssignedPersonnelController
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
         $assignments = $this->repository->getAll();
-        // RUTA ACTUALIZADA
         require_once 'views/CRUD/assigned/assigned.php';
     }
 
     public function create()
     {
-        //Dejo el token CSRF para el formulario
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
-        // RUTA ACTUALIZADA
         require_once 'views/CRUD/assigned/assignedCreate.php';
     }
 
@@ -36,11 +33,10 @@ class AssignedPersonnelController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // CSRF Check (Middleware)
-
-            $userId = trim($_POST['user_id']);
-            $scpId = trim($_POST['scp_id']);
-            $role = trim($_POST['role']);
+            // 1. SANITIZACIÓN
+            $userId = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_SPECIAL_CHARS);
+            $scpId = filter_input(INPUT_POST, 'scp_id', FILTER_SANITIZE_SPECIAL_CHARS);
+            $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_SPECIAL_CHARS);
 
             if (empty($userId) || empty($scpId)) {
                 echo "<script>alert('Error: User ID and SCP ID are required.'); window.history.back();</script>";
@@ -60,43 +56,43 @@ class AssignedPersonnelController
                 if (strpos($e->getMessage(), '23000') !== false) {
                     echo "<script>alert('Error: Duplicate entry or Invalid IDs.'); window.history.back();</script>";
                 } else {
-                    echo "<script>alert('Database Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                    echo "<script>alert('Database Error: " . addslashes(htmlspecialchars($e->getMessage())) . "'); window.history.back();</script>";
                 }
             }
             exit;
         }
     }
 
-    // --- NUEVO: EDITAR ---
+    // --- Edit assignment ---
     public function edit()
     {
-        // Dejo el token CSRF para el formulario
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
 
-        // Necesitamos ambos IDs para encontrar el registro
-        $uid = $_GET['uid'] ?? null;
-        $sid = $_GET['sid'] ?? null;
+        // Sanitización de GET parameters
+        $uid = isset($_GET['uid']) ? htmlspecialchars($_GET['uid']) : null;
+        $sid = isset($_GET['sid']) ? htmlspecialchars($_GET['sid']) : null;
 
         $assignment = $this->repository->getByIds($uid, $sid);
 
         if ($assignment) {
-            // RUTA ACTUALIZADA
             require_once 'views/CRUD/assigned/assignedEdit.php';
         } else {
             echo "<script>alert('Assignment record not found.'); window.close();</script>";
         }
     }
 
-    // --- NUEVO: ACTUALIZAR ---
+    // --- Update assignment ---
     public function update()
     {
         $this->verifyAuth();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userId = $_POST['user_id']; // Read only
-            $scpId = $_POST['scp_id'];   // Read only
-            $role = trim($_POST['role']);
+            // Read only inputs
+            $userId = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_SPECIAL_CHARS);
+            $scpId = filter_input(INPUT_POST, 'scp_id', FILTER_SANITIZE_SPECIAL_CHARS);
+            // Role es el único editable
+            $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_SPECIAL_CHARS);
 
             $assignment = new AssignedPersonnel($userId, $scpId, $role);
 
@@ -108,19 +104,19 @@ class AssignedPersonnelController
                         window.close();
                       </script>";
             } catch (Exception $e) {
-                echo "<script>alert('Error: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+                echo "<script>alert('Error: " . addslashes(htmlspecialchars($e->getMessage())) . "'); window.history.back();</script>";
             }
             exit;
         }
     }
 
-    // --- DELETE SEGURO (POST) ---
+    // --- Secure delete (POST) ---
     public function delete()
     {
         $this->verifyAuth();
-        // Leemos del POST
-        $userId = $_POST['uid'] ?? null;
-        $scpId = $_POST['sid'] ?? null;
+
+        $userId = filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_SPECIAL_CHARS);
+        $scpId = filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_SPECIAL_CHARS);
 
         if ($userId && $scpId) {
             $this->repository->delete($userId, $scpId);

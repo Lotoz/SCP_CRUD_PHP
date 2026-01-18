@@ -4,10 +4,26 @@ require_once 'views/templates/header.php';
 ?>
 
 <style>
-    header nav, .logo-area .security-level { display: none; }
-    header { justify-content: center; border-bottom: none; }
-    body { padding-bottom: 2rem; background-color: var(--bg-color); }
-    .form-section { background: var(--card-bg); padding: 20px; border: 1px solid var(--accent-color); }
+    header nav,
+    .logo-area .security-level {
+        display: none;
+    }
+
+    header {
+        justify-content: center;
+        border-bottom: none;
+    }
+
+    body {
+        padding-bottom: 2rem;
+        background-color: var(--bg-color);
+    }
+
+    .form-section {
+        background: var(--card-bg);
+        padding: 20px;
+        border: 1px solid var(--accent-color);
+    }
 </style>
 
 <main class="container mt-4">
@@ -18,9 +34,20 @@ require_once 'views/templates/header.php';
                 <h2 class="mb-4" style="font-family: var(--font-mono); color: #ffc107; border-bottom: 2px solid #ffc107;">
                     <i class="fas fa-user-edit"></i> UPDATE PERSONNEL FILE
                 </h2>
-
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                        style="border: 1px solid red; color: #000;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>ERROR:</strong>
+                        <?php
+                        echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
+                        unset($_SESSION['error']);
+                        ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
                 <form action="index.php?action=users_update" method="POST" id="createUserForm">
-                    
+
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                     <input type="hidden" name="id" value="<?= htmlspecialchars($user->getId()) ?>">
 
@@ -32,7 +59,12 @@ require_once 'views/templates/header.php';
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">New Password</label>
-                            <input type="password" name="password" id="password" class="form-control" placeholder="(Leave blank to keep current)">
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" placeholder="(Leave blank to keep current)">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword" style="border-color: #6c757d;">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                             <div id="errorPassword" hidden></div>
                         </div>
 
@@ -78,6 +110,7 @@ require_once 'views/templates/header.php';
                                 <option value="security" <?= $user->getRol() == 'security' ? 'selected' : '' ?>>Security</option>
                                 <option value="scienct" <?= $user->getRol() == 'scienct' ? 'selected' : '' ?>>Scientist</option>
                                 <option value="admin" <?= $user->getRol() == 'admin' ? 'selected' : '' ?>>Administrator</option>
+                                <option value="class-d" <?= $user->getRol() == 'class-d' ? 'selected' : '' ?>>Class-D</option>
                             </select>
                         </div>
                     </div>
@@ -97,7 +130,7 @@ require_once 'views/templates/header.php';
                     </div>
                 </form>
 
-                <script src="views/CRUD/assets/js/usersCreate.js"></script>
+                <script src="<?php echo BASE_URL; ?>views/CRUD/users/assets/js/usersCreate.js"></script>
             </div>
         </div>
     </div>

@@ -2,7 +2,6 @@
 $pageTitle = "New Operational Assignment";
 require_once 'views/templates/header.php';
 ?>
-
 <style>
     header nav,
     .logo-area .security-level {
@@ -41,20 +40,23 @@ require_once 'views/templates/header.php';
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Task Directive / Description</label>
-                        <textarea name="description" id="description" class="form-control" rows="5"
-                            placeholder="Enter protocol instructions or daily duties here..." required></textarea>
-                        <div id="errorDesc" hidden></div>
+                        <textarea name="description" id="description" class="form-control" rows="4"
+                            placeholder="Enter protocol instructions..." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Target Completion Date (Optional)</label>
+                        <input type="date" name="due_date" class="form-control" style="font-family: var(--font-mono);">
+                        <small class="text-muted">Leave empty if no strict deadline applies.</small>
                     </div>
 
                     <div class="alert alert-secondary small" style="font-family: var(--font-mono);">
-                        <i class="fas fa-info-circle"></i> This task will be automatically assigned to your Personnel ID:
+                        <i class="fas fa-info-circle"></i> Assigned to Personnel ID:
                         <strong><?= $_SESSION['user_id'] ?? 'UNKNOWN' ?></strong>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="button" class="btn btn-secondary" onclick="window.close()">
-                            <i class="fas fa-times"></i> CANCEL
-                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="window.close()">CANCEL</button>
                         <button type="submit" class="btn" style="background-color: var(--accent-color); color: #fff;">
                             <i class="fas fa-check"></i> CONFIRM ASSIGNMENT
                         </button>
@@ -64,6 +66,5 @@ require_once 'views/templates/header.php';
         </div>
     </div>
 </main>
-
-<script src="views/CRUD/assets/js/taskCreate.js"></script>
+<script src="<?php echo BASE_URL; ?>views/CRUD/task/assets/js/taskCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

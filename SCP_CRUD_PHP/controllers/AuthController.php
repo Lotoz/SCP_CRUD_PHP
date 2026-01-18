@@ -6,11 +6,16 @@ require_once 'config/Database.php';
 
 /**
  * AuthController - Authentication Controller
- * I am responsible for:
- * - Handling HTTP requests regarding login/register.
- * - Calling the repository for data access.
- * - Managing session logic.
- * - Rendering the auth views.
+ *
+ * Handles user authentication and registration flows. Key responsibilities:
+ * - validate and authenticate credentials using the login repository
+ * - manage session state on successful login (regenerate session id, store user info)
+ * - enforce account lockout after repeated failed attempts
+ * - render login/register views and redirect users appropriately
+ *
+ * Comments inside methods explain security-focused decisions such as
+ * preventing user enumeration, password hashing delegation to the repository,
+ * and theme whitelisting to avoid path traversal.
  */
 class AuthController
 {
@@ -40,8 +45,8 @@ class AuthController
             exit();
         }
 
-        // 1. INPUT VALIDATION (No usar $_POST directo)
-        // filter_input devuelve null si no existe, false si falla el filtro
+        // 1. INPUT VALIDATION (avoid reading $_POST directly where possible)
+        // filter_input returns null when missing and false when the filter fails
         $id = filter_input(INPUT_POST, 'user', FILTER_DEFAULT);
         $password = filter_input(INPUT_POST, 'password', FILTER_DEFAULT); // No sanitizamos passwords
 
@@ -57,7 +62,7 @@ class AuthController
         try {
             $user = $this->userRepository->getById($id);
 
-            // Prevención de enumeración de usuarios (Mensaje genérico)
+            // Prevent user enumeration by using a generic error message
             if (!$user) {
                 $_SESSION['error'] = 'Invalid credentials.';
                 header('Location: index.php?action=login');
@@ -84,7 +89,7 @@ class AuthController
                 exit();
             }
 
-            // Login Exitoso
+            // Successful login: reset attempts and create a fresh session
             $this->userRepository->resetAttempts($id);
             session_regenerate_id(true); // Prevenir Session Fixation
 
@@ -93,7 +98,7 @@ class AuthController
             $_SESSION['level']   = $user->getLevel();
             $_SESSION['rol']     = $user->getRol();
 
-            // Validación de Tema para evitar Path Traversal (ej: ../../hack.css)
+            // Theme validation to prevent path traversal (e.g. ../../hack.css)
             $allowedThemes = ['gears', 'unicorn', 'ice', 'admin', 'clef', 'sophie'];
             $theme = $user->getTheme();
             $_SESSION['theme'] = in_array($theme, $allowedThemes) ? $theme . '.css' : 'gears.css';
@@ -121,7 +126,7 @@ class AuthController
 
         $userId = $_SESSION['user_id'];
 
-        // Llamamos al nuevo método del repositorio
+        // Retrieve tasks assigned to the user that are not completed yet
         $tasks = $this->taskRepository->getNotCompletedTasks($userId);
 
         require_once 'views/dashboard.php';
@@ -132,6 +137,7 @@ class AuthController
      */
     public function logout()
     {
+        // Perform secure logout and redirect to login page
         SessionManager::logout();
         header('Location: index.php?action=login');
         exit();
@@ -150,12 +156,13 @@ class AuthController
             exit();
         }
 
-        // INPUT VALIDATION ROBUSTA
+        // Robust input validation: sanitize text fields and validate email
         $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_SPECIAL_CHARS);
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
         $lastname = filter_input(INPUT_POST, 'lastname', FILTER_SANITIZE_SPECIAL_CHARS);
         $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 
+        // Passwords are treated as opaque values here; they are hashed by the repository
         $password = $_POST['password'] ?? '';
         $confirm_password = $_POST['confirm_password'] ?? '';
 
@@ -165,7 +172,7 @@ class AuthController
             exit();
         }
 
-        // Validación de formato de ID (Solo letras, numeros, - y _)
+        // Validate ID format: allow only letters, numbers, hyphen and underscore
         if (!preg_match('/^[a-zA-Z0-9_-]+$/', $id)) {
             $_SESSION['error'] = 'ID contains invalid characters.';
             header('Location: index.php?action=register');
@@ -197,9 +204,8 @@ class AuthController
                 exit();
             }
 
-            // CREAR USUARIO
-            // NOTA: Pasamos la password PLANA ($password), porque el Repository::save() 
-            // ya tiene la línea: password_hash(..., PASSWORD_BCRYPT);
+            // Create user object and delegate hashing/storage to the repository.
+            // NOTE: the repository handles password hashing internally via password_hash().
             $user = new User($id, $name, $lastname, $email, $password, 1, 'cleaner', 'gears');
 
             if ($this->userRepository->save($user)) {

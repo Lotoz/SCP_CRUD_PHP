@@ -2,7 +2,6 @@
 $pageTitle = "Update Assignment Status";
 require_once 'views/templates/header.php';
 ?>
-
 <style>
     header nav,
     .logo-area .security-level {
@@ -43,7 +42,14 @@ require_once 'views/templates/header.php';
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Task Directive</label>
-                        <textarea name="description" class="form-control" rows="5" required><?= htmlspecialchars($task->getDescription()) ?></textarea>
+                        <textarea name="description" class="form-control" rows="4" required><?= htmlspecialchars($task->getDescription()) ?></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Target Completion Date</label>
+                        <input type="date" name="due_date" class="form-control"
+                            style="font-family: var(--font-mono);"
+                            value="<?= htmlspecialchars($task->getDueDate() ?? '') ?>">
                     </div>
 
                     <div class="mb-3 form-check p-3" style="background: rgba(0,0,0,0.1); border-radius: 5px; margin-left: 10px;">
@@ -67,6 +73,5 @@ require_once 'views/templates/header.php';
         </div>
     </div>
 </main>
-
-<script src="views/CRUD/assets/js/taskCreate.js"></script>
+<script src="<?php echo BASE_URL; ?>views/CRUD/task/assets/js/taskCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

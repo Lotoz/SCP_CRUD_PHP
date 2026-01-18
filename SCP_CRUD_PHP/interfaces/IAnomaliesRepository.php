@@ -38,7 +38,7 @@ interface IAnomaliesRepository
      * @param Anomalies $anomalies
      * @return bool
      */
-    public function update(Anomalies $anomalies);
+    public function update(Anomalies $anomaly, $originalId);
 
     /**
      * I delete an anomaly by its ID.
