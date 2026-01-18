@@ -3,6 +3,11 @@
 require_once 'interfaces/ISiteRepository.php';
 require_once 'models/Site.php';
 
+/**
+ * MariaDBCrudSiteRepository
+ * * Concrete implementation for managing Containment Sites.
+ * * Connects to the 'sitio' table in the database.
+ */
 class MariaDBCrudSiteRepository implements ISiteRepository
 {
     private $pdo;
@@ -12,6 +17,10 @@ class MariaDBCrudSiteRepository implements ISiteRepository
         $this->pdo = $pdo;
     }
 
+    /**
+     * Retrieves all containment sites, ordered by ID.
+     * @return array List of Site objects.
+     */
     public function getAll()
     {
         $sql = "SELECT * FROM sitio ORDER BY id ASC";
@@ -25,6 +34,11 @@ class MariaDBCrudSiteRepository implements ISiteRepository
         return $sites;
     }
 
+    /**
+     * Finds a specific site by its unique ID.
+     * @param int $id
+     * @return Site|null
+     */
     public function getById($id)
     {
         $sql = "SELECT * FROM sitio WHERE id = :id LIMIT 1";
@@ -38,9 +52,14 @@ class MariaDBCrudSiteRepository implements ISiteRepository
         return null;
     }
 
+    /**
+     * Registers a new Containment Site.
+     * * NOTE: The 'id' column is excluded here as it is handled by the database's AUTO_INCREMENT.
+     * @param Site $site
+     * @return bool
+     */
     public function create(Site $site)
     {
-        // I do not include 'id' because it is AUTO_INCREMENT
         $sql = "INSERT INTO sitio (name_sitio, ubicacion, id_administrador) 
                 VALUES (:name, :loc, :admin)";
 
@@ -52,6 +71,11 @@ class MariaDBCrudSiteRepository implements ISiteRepository
         ]);
     }
 
+    /**
+     * Updates an existing Site's details.
+     * @param Site $site
+     * @return bool
+     */
     public function update(Site $site)
     {
         $sql = "UPDATE sitio SET 
@@ -69,6 +93,11 @@ class MariaDBCrudSiteRepository implements ISiteRepository
         ]);
     }
 
+    /**
+     * Deletes a site record.
+     * @param int $id
+     * @return bool
+     */
     public function delete($id)
     {
         $sql = "DELETE FROM sitio WHERE id = :id";
@@ -77,7 +106,7 @@ class MariaDBCrudSiteRepository implements ISiteRepository
     }
 
     /**
-     * I map a DB row to a Site object.
+     * Helper to map database rows to Site objects.
      */
     private function toObject($row)
     {

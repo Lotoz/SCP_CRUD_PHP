@@ -2,32 +2,32 @@
 
 /**
  * Interface ISiteRepository
- * I define the contract for accessing Site data.
+ * Defines the contract for managing Containment Site data.
  */
 interface ISiteRepository
 {
     /**
-     * I retrieve all sites from the database.
+     * Retrieves all registered containment sites.
      */
     public function getAll();
 
     /**
-     * I find a specific site by its ID.
+     * Finds a specific site by its numeric ID.
      */
     public function getById($id);
 
     /**
-     * I create a new site record.
+     * Establishes a new Site record.
      */
     public function create(Site $site);
 
     /**
-     * I update an existing site.
+     * Updates site details (Name, Location, Director).
      */
     public function update(Site $site);
 
     /**
-     * I delete a site by its ID.
+     * Decommissions (deletes) a site.
      */
     public function delete($id);
 }

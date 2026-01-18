@@ -3,6 +3,12 @@
 require_once 'interfaces/IAssignedPersonnelRepository.php';
 require_once 'models/AssignedPersonnel.php';
 
+/**
+ * MariaDBCrudAssignedPersonnelRepository
+ * * Concrete implementation for managing the Many-to-Many relationship 
+ * between Personnel and SCPs.
+ * * NOTE: This table uses a Composite Primary Key (user_id + scp_id).
+ */
 class MariaDBCrudAssignedPersonnelRepository implements IAssignedPersonnelRepository
 {
     private $pdo;
@@ -12,9 +18,13 @@ class MariaDBCrudAssignedPersonnelRepository implements IAssignedPersonnelReposi
         $this->pdo = $pdo;
     }
 
+    /**
+     * Retrieves all active assignments.
+     * @return array List of AssignedPersonnel objects.
+     */
     public function getAll()
     {
-        // I join tables to get extra info if needed, but for now I select the raw relation
+        // Fetches raw relationship data. Join queries would happen in a Service layer if needed.
         $sql = "SELECT * FROM assigned_personnel ORDER BY scp_id ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
@@ -26,6 +36,13 @@ class MariaDBCrudAssignedPersonnelRepository implements IAssignedPersonnelReposi
         return $list;
     }
 
+    /**
+     * Finds a specific assignment using the Composite Key.
+     * Requires both the User ID and the SCP ID to identify a unique row.
+     * * @param string $userId
+     * @param string $scpId
+     * @return AssignedPersonnel|null
+     */
     public function getByIds($userId, $scpId)
     {
         $sql = "SELECT * FROM assigned_personnel WHERE user_id = :uid AND scp_id = :sid LIMIT 1";
@@ -36,6 +53,9 @@ class MariaDBCrudAssignedPersonnelRepository implements IAssignedPersonnelReposi
         return $row ? $this->toObject($row) : null;
     }
 
+    /**
+     * Creates a new assignment linking a user to an anomaly with a specific role.
+     */
     public function create(AssignedPersonnel $assignment)
     {
         $sql = "INSERT INTO assigned_personnel (user_id, scp_id, role) VALUES (:uid, :sid, :role)";
@@ -47,9 +67,13 @@ class MariaDBCrudAssignedPersonnelRepository implements IAssignedPersonnelReposi
         ]);
     }
 
+    /**
+     * Updates an existing assignment.
+     * NOTE: We only update the 'role' here. The IDs are the keys; changing them 
+     * would technically be a Delete + Create operation.
+     */
     public function update(AssignedPersonnel $assignment)
     {
-        // I can only update the Role, because user_id and scp_id are the keys.
         $sql = "UPDATE assigned_personnel SET role = :role 
                 WHERE user_id = :uid AND scp_id = :sid";
 
@@ -61,6 +85,10 @@ class MariaDBCrudAssignedPersonnelRepository implements IAssignedPersonnelReposi
         ]);
     }
 
+    /**
+     * Removes an assignment record.
+     * Requires both IDs to ensure we delete the exact relationship.
+     */
     public function delete($userId, $scpId)
     {
         $sql = "DELETE FROM assigned_personnel WHERE user_id = :uid AND scp_id = :sid";
@@ -68,6 +96,9 @@ class MariaDBCrudAssignedPersonnelRepository implements IAssignedPersonnelReposi
         return $stmt->execute([':uid' => $userId, ':sid' => $scpId]);
     }
 
+    /**
+     * Helper to map database rows to objects.
+     */
     private function toObject($row)
     {
         return new AssignedPersonnel(

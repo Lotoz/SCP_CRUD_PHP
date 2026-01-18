@@ -3,18 +3,28 @@
 require_once 'interfaces/IUserRepository.php';
 require_once 'models/User.php';
 
+/**
+ * MariaDBCrudUserRepository
+ * * Concrete implementation for Administrative User Management.
+ * * Handles the lifecycle of personnel records, including hashing and state management.
+ */
 class MariaDBCrudUserRepository implements IUserRepository
 {
     private $pdo;
 
     /**
-     * I inject the connection in the constructor.
+     * Initializes the repository with the database connection.
+     * @param PDO $pdo
      */
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }
 
+    /**
+     * Retrieves all registered users, ordered by creation date (newest first).
+     * @return array List of User objects.
+     */
     public function getAll()
     {
         $sql = "SELECT * FROM users ORDER BY creationDate DESC";
@@ -28,6 +38,11 @@ class MariaDBCrudUserRepository implements IUserRepository
         return $users;
     }
 
+    /**
+     * Finds a specific user by their ID.
+     * @param string $id
+     * @return User|null
+     */
     public function getById($id)
     {
         $sql = "SELECT * FROM users WHERE id = :id LIMIT 1";
@@ -41,6 +56,11 @@ class MariaDBCrudUserRepository implements IUserRepository
         return null;
     }
 
+    /**
+     * Creates a new user record.
+     * * SECURITY: The password is hashed using BCRYPT before storage.
+     * * Sets the creation date to current timestamp (NOW()).
+     */
     public function create(User $user)
     {
         $sql = "INSERT INTO users (id, name, lastname, email, password, rol, level, theme, tryAttempts, state, creationDate) 
@@ -48,7 +68,7 @@ class MariaDBCrudUserRepository implements IUserRepository
 
         $stmt = $this->pdo->prepare($sql);
 
-        // I hash the password before saving
+        // Hash the password for security
         $hashedPassword = password_hash($user->getPassword(), PASSWORD_BCRYPT);
 
         return $stmt->execute([
@@ -64,10 +84,14 @@ class MariaDBCrudUserRepository implements IUserRepository
         ]);
     }
 
+    /**
+     * Updates an existing user's profile.
+     * * LOGIC: Checks if the password field is populated. 
+     * If yes: It hashes and updates the password.
+     * If no: It keeps the existing password hash in the database.
+     */
     public function update(User $user)
     {
-        // I check if the password needs to be updated or kept
-        // If the object has a password (not empty), I update it. If not, I keep the old one.
         $passwordSql = "";
         $params = [
             ':name'     => $user->getname(),
@@ -80,6 +104,7 @@ class MariaDBCrudUserRepository implements IUserRepository
             ':id'       => $user->getId()
         ];
 
+        // Only append password update query if a new password was provided
         if (!empty($user->getPassword())) {
             $passwordSql = ", password = :password";
             $params[':password'] = password_hash($user->getPassword(), PASSWORD_BCRYPT);
@@ -100,6 +125,10 @@ class MariaDBCrudUserRepository implements IUserRepository
         return $stmt->execute($params);
     }
 
+    /**
+     * Toggles a user's account state (Active/Locked).
+     * Also resets 'tryAttempts' to 0 to unlock the account if it was locked due to failed logins.
+     */
     public function updateState($id, $state)
     {
         $sql = "UPDATE users SET state = :state, tryAttempts = 0 WHERE id = :id";
@@ -107,14 +136,23 @@ class MariaDBCrudUserRepository implements IUserRepository
         return $stmt->execute([':state' => $state, ':id' => $id]);
     }
 
+    /**
+     * Deletes a user record.
+     * * NOTE: Database Triggers (BEFORE DELETE) automatically archive this user 
+     * into the 'ex_empleados' table for historical records.
+     */
     public function delete($id)
     {
-        // Triggers in DB will handle the backup to 'ex_empleados'
         $sql = "DELETE FROM users WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
 
+    /**
+     * Helper to map database rows to User objects.
+     * * SECURITY: Does NOT return the password hash in the object property 
+     * to prevent accidental leakage in views/logs.
+     */
     private function mapRowToUser($row)
     {
         $user = new User(
@@ -122,7 +160,7 @@ class MariaDBCrudUserRepository implements IUserRepository
             $row['name'],
             $row['lastname'],
             $row['email'],
-            '', // We don't return the password hash for security reasons in listing
+            '', // Return empty password for security
             $row['level'],
             $row['rol'],
             $row['theme']

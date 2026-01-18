@@ -3,6 +3,11 @@
 require_once 'interfaces/ITaskRepository.php';
 require_once 'models/Task.php';
 
+/**
+ * MariaDBCrudTaskRepository
+ * * Concrete implementation for Personal Task Management.
+ * * Handles the CRUD operations for the 'tasks' table, including completion status and due dates.
+ */
 class MariaDBCrudTaskRepository implements ITaskRepository
 {
     private $pdo;
@@ -12,6 +17,10 @@ class MariaDBCrudTaskRepository implements ITaskRepository
         $this->pdo = $pdo;
     }
 
+    /**
+     * Retrieves all tasks in the system (Admin view).
+     * Ordered by ID DESC to show the most recent tasks first.
+     */
     public function getAll()
     {
         $sql = "SELECT * FROM tasks ORDER BY id DESC";
@@ -26,6 +35,11 @@ class MariaDBCrudTaskRepository implements ITaskRepository
         return $tasks;
     }
 
+    /**
+     * Retrieves all tasks assigned to a specific user.
+     * @param string $userId
+     * @return array
+     */
     public function getByUserId($userId)
     {
         $sql = "SELECT * FROM tasks WHERE id_usuario = :id_user ORDER BY id DESC";
@@ -40,6 +54,12 @@ class MariaDBCrudTaskRepository implements ITaskRepository
         return $tasks;
     }
 
+    /**
+     * Retrieves only the pending (incomplete) tasks for a user.
+     * * Optimized for the Dashboard view to reduce clutter.
+     * @param string $userId
+     * @return array
+     */
     public function getNotCompletedTasks($userId)
     {
         $sql = "SELECT * FROM tasks WHERE completado = 0 AND id_usuario = :id_user ORDER BY id DESC";
@@ -54,10 +74,14 @@ class MariaDBCrudTaskRepository implements ITaskRepository
             }
             return $tasks;
         } catch (PDOException $e) {
+            // Fail gracefully by returning an empty list rather than crashing the dashboard
             return [];
         }
     }
 
+    /**
+     * Finds a specific task by its unique numeric ID.
+     */
     public function getById($id)
     {
         $sql = "SELECT * FROM tasks WHERE id = :id LIMIT 1";
@@ -74,8 +98,10 @@ class MariaDBCrudTaskRepository implements ITaskRepository
     }
 
     /**
-     * Create a new task in the database.
-     * [ACTUALIZADO]: Incluye due_date
+     * Creates a new task record.
+     * * UPDATED: Now supports the optional 'due_date' field.
+     * @param Task $task
+     * @return bool
      */
     public function create(Task $task)
     {
@@ -88,13 +114,14 @@ class MariaDBCrudTaskRepository implements ITaskRepository
             ':desc' => $task->getDescription(),
             ':comp' => $task->getCompletado(),
             ':user' => $task->getIdUsuario(),
-            ':date' => $task->getDueDate() // Puede ser null, y está bien
+            ':date' => $task->getDueDate() // Null values are handled automatically by PDO
         ]);
     }
 
     /**
-     * Update an existing task.
-     * [ACTUALIZADO]: Incluye due_date
+     * Updates an existing task's description, status, or due date.
+     * @param Task $task
+     * @return bool
      */
     public function update(Task $task)
     {
@@ -114,6 +141,9 @@ class MariaDBCrudTaskRepository implements ITaskRepository
         ]);
     }
 
+    /**
+     * Deletes a task by ID.
+     */
     public function delete($id)
     {
         $sql = "DELETE FROM tasks WHERE id = :id";
@@ -124,8 +154,8 @@ class MariaDBCrudTaskRepository implements ITaskRepository
     // ===== Private Helper Methods =====
 
     /**
-     * Maps a database row (array) to a Task object instance.
-     *  Mapea la columna due_date
+     * Maps a database row (assoc array) to a Task object instance.
+     * Handles potential nulls for the 'due_date' column safely.
      */
     private function toObject($row)
     {
@@ -134,7 +164,6 @@ class MariaDBCrudTaskRepository implements ITaskRepository
             $row['description'],
             $row['completado'],
             $row['id_usuario'],
-            // Si la columna no existe en el array (por si acaso), pasamos null
             $row['due_date'] ?? null
         );
     }

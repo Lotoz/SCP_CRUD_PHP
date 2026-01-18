@@ -23,8 +23,6 @@ class Task
         $this->description = $description;
         $this->completado = $completado;
         $this->id_usuario = $id_usuario;
-
-        // Validación básica: si llega string vacío "", lo convertimos a null para la BD
         $this->due_date = empty($due_date) ? null : $due_date;
     }
 
@@ -40,10 +38,6 @@ class Task
         return $this->description;
     }
 
-    /**
-     *  Obtener fecha límite.
-     * @return string|null (Format YYYY-MM-DD)
-     */
     public function getDueDate()
     {
         return $this->due_date;
@@ -71,10 +65,6 @@ class Task
         $this->description = $description;
     }
 
-    /**
-     *Establecer fecha límite.
-     * @param string|null $due_date
-     */
     public function setDueDate($due_date)
     {
         $this->due_date = empty($due_date) ? null : $due_date;

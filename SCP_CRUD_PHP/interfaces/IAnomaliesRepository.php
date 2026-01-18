@@ -2,46 +2,47 @@
 
 /**
  * Interface IAnomaliesRepository
- * I define the contract for accessing Anomalies data.
+ * Defines the contract for accessing and manipulating SCP Anomaly data.
  */
 interface IAnomaliesRepository
 {
     /**
-     * I retrieve all anomalies from the database.
+     * Retrieves all anomalies from the database.
      * @return array Array of Anomalies objects.
      */
     public function getAll();
 
     /**
-     * I find a specific anomaly by its ID (VARCHAR).
-     * @param string $id
-     * @return Anomalies|null
+     * Finds a specific anomaly by its SCP ID (e.g., 'SCP-173').
+     * @param string $id The unique alphanumeric ID.
+     * @return Anomalies|null Returns object if found, null otherwise.
      */
     public function getById($id);
 
     /**
-     * I retrieve all anomalies contained in a specific Site.
+     * Retrieves all anomalies contained within a specific Site.
      * @param int $siteId
-     * @return array
+     * @return array List of anomalies.
      */
     public function getBySiteId($siteId);
 
     /**
-     * I create a new anomaly record.
+     * Persists a new anomaly record in the database.
      * @param Anomalies $anomalies
-     * @return bool
+     * @return bool True on success.
      */
     public function create(Anomalies $anomalies);
 
     /**
-     * I update an existing anomaly.
-     * @param Anomalies $anomalies
+     * Updates an existing anomaly.
+     * @param Anomalies $anomaly The object with new data.
+     * @param string $originalId The previous ID (required if the SCP-ID itself is being renamed).
      * @return bool
      */
     public function update(Anomalies $anomaly, $originalId);
 
     /**
-     * I delete an anomaly by its ID.
+     * Deletes an anomaly record.
      * @param string $id
      * @return bool
      */

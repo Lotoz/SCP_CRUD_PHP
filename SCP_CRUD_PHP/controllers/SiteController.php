@@ -3,6 +3,14 @@
 require_once 'models/Site.php';
 require_once 'interfaces/ISiteRepository.php';
 
+/**
+ * SiteController - Containment Site Management
+ *
+ * Handles the creation and management of SCP Containment Sites.
+ * STRICT SECURITY: Only Level 5 personnel (O5 Council/Site Directors) can access these functions.
+ * Little note for curiosity: In this controller, the errores are shown using JavaScript alerts to ensure immediate visibility. Not use the $_SESSION method.
+ * Because i wanna try something different and see how it works in practice.
+ */
 class SiteController
 {
     private $repository;
@@ -12,14 +20,20 @@ class SiteController
         $this->repository = $repository;
     }
 
+    /**
+     * Lists all registered Containment Sites.
+     */
     public function index()
     {
         $csrf_token = SessionManager::generateCSRFToken();
-        $this->verifyAuth();
+        $this->verifyAuth(); // Level 5 check
         $sitesList = $this->repository->getAll();
         require_once 'views/CRUD/sites/sites.php';
     }
 
+    /**
+     * Displays the form to establish a new Site.
+     */
     public function create()
     {
         $csrf_token = SessionManager::generateCSRFToken();
@@ -27,15 +41,21 @@ class SiteController
         require_once 'views/CRUD/sites/sitesCreate.php';
     }
 
+    /**
+     * Stores a new Site record (POST).
+     * Validates that Name and Location are provided. Admin ID is optional.
+     */
     public function store()
     {
         $this->verifyAuth();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // 1. SANITIZACIÓN
+            // 1. Sanitize Input
             $name = filter_input(INPUT_POST, 'name_sitio', FILTER_SANITIZE_SPECIAL_CHARS);
             $ubicacion = filter_input(INPUT_POST, 'ubicacion', FILTER_SANITIZE_SPECIAL_CHARS);
+
+            // Admin ID is optional (some sites might be automated or pending assignment)
             $adminId = filter_input(INPUT_POST, 'id_administrador', FILTER_SANITIZE_SPECIAL_CHARS);
             $adminId = !empty($adminId) ? $adminId : null;
 
@@ -44,6 +64,7 @@ class SiteController
                 exit;
             }
 
+            // Create Site Object (ID is null for new entries)
             $site = new Site(null, $name, $ubicacion, $adminId);
 
             try {
@@ -60,12 +81,16 @@ class SiteController
         }
     }
 
+    /**
+     * Displays the edit form for a specific Site.
+     * Validates that the Site ID is a valid integer before querying.
+     */
     public function edit($id)
     {
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
 
-        // ID de sitio suele ser entero
+        // Site IDs are Auto-Increment Integers, so we strictly validate the type
         if (!filter_var($id, FILTER_VALIDATE_INT)) {
             echo "<script>alert('Invalid Site ID.'); window.close();</script>";
             exit;
@@ -81,6 +106,9 @@ class SiteController
         require_once 'views/CRUD/sites/sitesEdit.php';
     }
 
+    /**
+     * Updates an existing Site (POST).
+     */
     public function update()
     {
         $this->verifyAuth();
@@ -114,6 +142,10 @@ class SiteController
         }
     }
 
+    /**
+     * Decomissions (Deletes) a Site.
+     * Requires POST method to prevent accidental deletion via URL.
+     */
     public function delete()
     {
         $this->verifyAuth();
@@ -128,6 +160,10 @@ class SiteController
         exit;
     }
 
+    /**
+     * Enforces Authorization.
+     * STRICT: Level 5 Clearance is mandatory for any Site operation.
+     */
     private function verifyAuth()
     {
         if (!isset($_SESSION['user_id']) || $_SESSION['level'] < 5) {

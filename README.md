@@ -1,6 +1,19 @@
-# 📂 SCP Foundation Secure Database System
+# SCP Foundation Secure Database System
 
-![SCP Logo](https://upload.wikimedia.org/wikipedia/commons/e/ec/SCP_Foundation_%28edificio%29_logo.svg)
+<div align="center">
+
+<img src="./pictures_README/banner.png" alt="Project Banner" width="600px" height="400px">
+
+![Tech Stack](https://skillicons.dev/icons?i=php,mysql,html,css,js,bootstrap,vscode)
+
+![Status](https://img.shields.io/badge/Status-In%20Development-green?style=for-the-badge)
+![License](https://img.shields.io/badge/License-GPLv3-blue?style=for-the-badge)
+
+</div>
+
+<p align="center">
+  <a href="README.es.md">🇪🇸 Versión README en Español</a>
+</p>
 
 > **⚠️ WARNING:** This software is an **educational project** developed to demonstrate skills in **Native PHP, OOP, and MVC Architecture**. It is not designed for use in critical production environments.
 
@@ -64,7 +77,6 @@ Follow these steps to set up the project in your local environment:
 
 ```bash
 git clone https://github.com/tu-usuario/scp-crud-php.git
-cd scp-crud-php
 ```
 
 ### 2. Configure the Local Server
@@ -79,24 +91,36 @@ cd scp-crud-php
 
 2. Configuration
 
-Edit the configuration file with your local credentials: 📂 SCP_CRUD_PHP/config/Database.php
+Edit the configuration file with your local credentials: 📂 SCP_CRUD_PHP/config/Database.php (If you want, you can use the default: view.)
 
 ```php
 private $host = "localhost";
 private $db_name = "scp_data";
-private $username = "view"; // Your username
+private $username = ""; // Your username
 private $password = "";     // Your password
 ```
 
 Default credentials are view / yX/I!geU1xKbG3F[ for testing purposes.
 
-3. Permissions (Linux/Mac Only)
+3. Copy the directory to your server's root folder (e.g., `htdocs` for XAMPP).
+
+You must copy SCP_CRUD_PHP/ to the server root. This directory contains all the source code.
+
+4. Permissions (Linux/Mac Only)
 
 Ensure the upload folder has write permissions:
 
 ```bash
 chmod -R 777 views/CRUD/anomalies/assets/img/
 ```
+5. Enable your server or start XAMPP/LAMPP.
+
+6. Access the application via your browser:
+
+```http://localhost/SCP_CRUD_PHP/
+```
+
+7. Enjoy exploring the SCP Foundation Secure Database System!
 
 ---
 
@@ -125,9 +149,37 @@ You can find a complete list of test users in the 📂 EXTRA/ folder.
 
 ---
 
+### 📸 Pictures
+
+| Login | Register | Dashboard |
+|-------|----------|-----------|
+| ![Login Screen](pictures_README/login.png) | ![Register Screen](pictures_README/register.png) | ![Dashboard](pictures_README/admin.png) |
+
+**Temas Disponibles:**
+
+| Gears | Ice | Sophie |
+|-------|-----|--------|
+| ![Gears Theme](pictures_README/gears.png) | ![Ice Theme](pictures_README/ice.png) | ![Sophie Theme](pictures_README/sophie.png) |
+
+| Unicorn | Clef | Admin |
+|---------|------|-------|
+| ![Unicorn Theme](pictures_README/unicorn.png) | ![Clef Theme](pictures_README/clef.png) | ![Admin Theme](pictures_README/admin.png) |
+
+## Example of Anomaly Management
+
+| Anomalies | Edit | Create |
+|---------  |------| -------|
+| ![Anomalies](pictures_README/anomalies.png) | ![Clef Theme](pictures_README/editAnomalies.png) | ![Admin Theme](pictures_README/createAnomalies.png) |
+
+You can see the application in this video: [SCP Secure Database System - Demo Video]()
+
+---
+
 ## 📜 License
 
 This project is open source and under the MIT license. Check the LICENSE file for more details.
 
 ---
 Secure. Contain. Protect.
+
+<div align="center"> <sub>Developed with ❤️ by <a href="https://github.com/Lotoz">Lotoz</a></sub> </div>

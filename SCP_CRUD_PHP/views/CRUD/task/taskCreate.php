@@ -33,7 +33,12 @@ require_once 'views/templates/header.php';
                 <h2 class="mb-4" style="font-family: var(--font-mono); color: var(--highlight-color); border-bottom: 2px solid var(--accent-color);">
                     <i class="fas fa-clipboard-list"></i> NEW ASSIGNMENT
                 </h2>
-
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger" style="font-family: var(--font-mono);">
+                        <?= htmlspecialchars($_SESSION['error']);
+                        unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
                 <form action="index.php?action=task_store" method="POST" id="createTaskForm">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">

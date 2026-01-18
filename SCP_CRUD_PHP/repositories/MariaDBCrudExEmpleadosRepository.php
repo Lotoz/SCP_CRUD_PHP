@@ -3,6 +3,12 @@
 require_once 'interfaces/IExEmpleadosRepository.php';
 require_once 'models/ExEmpleados.php';
 
+/**
+ * MariaDBCrudExEmpleadosRepository
+ * * Concrete implementation for accessing the Former Employees archive.
+ * * This table is typically populated via Database Triggers upon user deletion.
+ * Provides read-only access to history and the ability to permanently expunge records.
+ */
 class MariaDBCrudExEmpleadosRepository implements IExEmpleadosRepository
 {
     private $pdo;
@@ -12,9 +18,13 @@ class MariaDBCrudExEmpleadosRepository implements IExEmpleadosRepository
         $this->pdo = $pdo;
     }
 
+    /**
+     * Retrieves the full history of former personnel.
+     * * Ordered by 'fecha_eliminacion' DESC to show the most recent terminations first.
+     * @return array List of ExEmpleados objects.
+     */
     public function getAll()
     {
-        // I order by deletion date descending (newest archives first)
         $sql = "SELECT * FROM ex_empleados ORDER BY fecha_eliminacion DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
@@ -26,58 +36,22 @@ class MariaDBCrudExEmpleadosRepository implements IExEmpleadosRepository
         return $list;
     }
 
-    public function getById($id)
-    {
-        $sql = "SELECT * FROM ex_empleados WHERE id = :id LIMIT 1";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $row ? $this->toObject($row) : null;
-    }
-
-    public function create(ExEmpleados $ex)
-    {
-        // I allow manual insertion just in case, trigger usually handles this.
-        $sql = "INSERT INTO ex_empleados (name, lastname, rol, level, fecha_eliminacion) 
-                VALUES (:name, :lastname, :rol, :level, NOW())";
-
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            ':name'     => $ex->getName(),
-            ':lastname' => $ex->getLastname(),
-            ':rol'      => $ex->getRol(),
-            ':level'    => $ex->getLevel()
-        ]);
-    }
-
-    public function update(ExEmpleados $ex)
-    {
-        $sql = "UPDATE ex_empleados SET 
-                name = :name, 
-                lastname = :lastname, 
-                rol = :rol, 
-                level = :level
-                WHERE id = :id";
-
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            ':name'     => $ex->getName(),
-            ':lastname' => $ex->getLastname(),
-            ':rol'      => $ex->getRol(),
-            ':level'    => $ex->getLevel(),
-            ':id'       => $ex->getId()
-        ]);
-    }
-
+    /**
+     * Permanently deletes a record from the history log.
+     * * WARNING: This action removes the only remaining trace of the employee.
+     * @param string $id The ID of the former employee.
+     * @return bool
+     */
     public function delete($id)
     {
-        // Use carefully: This deletes the history log.
         $sql = "DELETE FROM ex_empleados WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':id' => $id]);
     }
 
+    /**
+     * Helper to map database rows to ExEmpleados objects.
+     */
     private function toObject($row)
     {
         return new ExEmpleados(
