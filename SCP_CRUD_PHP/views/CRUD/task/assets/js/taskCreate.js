@@ -10,11 +10,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 1. Obtener elementos
         const descInput = document.getElementById('description');
-        const dateInput = document.getElementById('due_date'); // Nuevo
+        const dateInput = document.getElementById('due_date'); 
 
         // 2. Obtener contenedores de error
         const errorDesc = document.getElementById('errorDesc');
-        const errorDate = document.getElementById('errorDate'); // Nuevo
+        const errorDate = document.getElementById('errorDate'); 
 
         // 3. Función para limpiar errores (DRY)
         function clearError(el) {
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
             isValid = false;
         }
 
-        // --- VALIDACIÓN 2: Fecha (Opcional, pero si existe, no puede ser pasado) ---
+        // --- VALIDACIÓN 2: Fecha NO VA, revisar luego ---
         if (dateInput && dateInput.value !== '') {
             const inputDate = new Date(dateInput.value);
 
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Solución robusta: comparar strings ISO (YYYY-MM-DD)
             const todayString = new Date().toISOString().split('T')[0];
-            const inputString = dateInput.value;
+            const inputString = inputDate.value;
 
             if (inputString < todayString) {
                 showError(errorDate, 'The target date cannot be in the past.');

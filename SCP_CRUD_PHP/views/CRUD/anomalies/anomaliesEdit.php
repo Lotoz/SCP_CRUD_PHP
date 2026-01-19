@@ -115,5 +115,5 @@ require_once 'views/templates/header.php';
     </div>
 </main>
 
-<script src="<?php echo BASE_URL; ?>views/CRUD/anomalies/assets/js/anomaliesCreate.js"></script>
+<script src="views/CRUD/anomalies/assets/js/anomaliesCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

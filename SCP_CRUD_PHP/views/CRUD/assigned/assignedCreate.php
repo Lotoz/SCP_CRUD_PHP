@@ -88,5 +88,5 @@ require_once 'views/templates/header.php';
     </div>
 </main>
 
-<script src="<?php echo BASE_URL; ?>views/CRUD/assigned/assets/js/assignedCreate.js"></script>
+<script src="views/CRUD/assigned/assets/js/assignedCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

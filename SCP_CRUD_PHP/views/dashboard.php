@@ -82,7 +82,7 @@ require_once 'views/templates/header.php';
     </div>
 </main>
 
-
+<script src="views/assets/js/task.js"></script>
 <?php
 require_once 'views/templates/footer.php';
 ?>

@@ -81,5 +81,5 @@ require_once 'views/templates/header.php';
         </div>
     </div>
 </main>
-<script src="<?php echo BASE_URL; ?>views/CRUD/task/assets/js/taskCreate.js"></script>
+<script src="views/CRUD/task/assets/js/taskCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

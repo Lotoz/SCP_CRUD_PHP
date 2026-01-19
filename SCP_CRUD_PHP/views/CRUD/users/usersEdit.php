@@ -106,7 +106,7 @@ require_once 'views/templates/header.php';
                     </div>
                 </form>
 
-                <script src="<?php echo BASE_URL; ?>views/CRUD/users/assets/js/usersCreate.js"></script>
+                <script src="views/CRUD/users/assets/js/usersCreate.js"></script>
             </div>
         </div>
     </div>
