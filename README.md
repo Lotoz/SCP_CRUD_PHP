@@ -13,6 +13,7 @@
 
 <p align="center">
   <a href="README.es.md">🇪🇸 Versión README en Español</a>
+  <a href="https://www.notion.so/SCP-Foundation-Secure-Database-System-2ed4d660fb3b80ea82cff7f8b43f28aa?source=copy_link" > Project documentation (more extensive) </a>
 </p>
 
 > **⚠️ WARNING:** This software is an **educational project** developed to demonstrate skills in **Native PHP, OOP, and MVC Architecture**. It is not designed for use in critical production environments.
