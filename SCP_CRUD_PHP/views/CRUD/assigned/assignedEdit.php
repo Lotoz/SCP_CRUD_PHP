@@ -34,7 +34,15 @@ require_once 'views/templates/header.php';
                 <h2 class="mb-4" style="font-family: var(--font-mono); color: #ffc107; border-bottom: 2px solid #ffc107;">
                     <i class="fas fa-edit"></i> UPDATE PROTOCOLS
                 </h2>
-
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <?php
+                        echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
+                        unset($_SESSION['error']);
+                        ?>
+                    </div>
+                <?php endif; ?>
                 <form action="index.php?action=assigned_update" method="POST" id="createAssignedForm">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">

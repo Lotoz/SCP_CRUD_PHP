@@ -107,8 +107,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 6. Validate Level
         const levelValue = parseInt(levelInput.value);
-        if (isNaN(levelValue) || levelValue < 1 || levelValue > 5) {
-            showError(errorLevelDiv, 'Clearance Level must be between 1 and 5.');
+        if (isNaN(levelValue) || levelValue <= 0 || levelValue > 10) {
+            showError(errorLevelDiv, 'Clearance Level must be between 1 and 5.(Admin levels 6-10 are restricted)');
             isValid = false;
         }
 

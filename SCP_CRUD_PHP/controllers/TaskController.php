@@ -88,7 +88,7 @@ class TaskController
                         window.close();
                       </script>";
             } catch (Exception $e) {
-                $_SESSION['error'] = "DATABASE ERROR: " . $e->getMessage();
+                $_SESSION['error'] = "DATABASE ERROR. Could not create task: ";
                 header("Location: index.php?action=task_create");
                 exit;
             }

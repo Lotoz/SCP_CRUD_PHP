@@ -117,7 +117,8 @@ chmod -R 777 views/CRUD/anomalies/assets/img/
 
 6. Access the application via your browser:
 
-```http://localhost/SCP_CRUD_PHP/
+```bash
+http://localhost/SCP_CRUD_PHP/
 ```
 
 7. Enjoy exploring the SCP Foundation Secure Database System!
@@ -171,13 +172,31 @@ You can find a complete list of test users in the 📂 EXTRA/ folder.
 |---------  |------| -------|
 | ![Anomalies](pictures_README/anomalies.png) | ![Clef Theme](pictures_README/editAnomalies.png) | ![Admin Theme](pictures_README/createAnomalies.png) |
 
+## Example of view Class-D (Level 0)
+
+| Tasks | View SCPs |
+|-------|-----------|
+| ![Tasks](pictures_README/classD1.png) | ![View SCPs](pictures_README/classD2.png) |
+
+## SCP Wiki Public View
+
+| SCP Wiki | SCP  |
+|----------|------|
+| ![SCP Wiki](pictures_README/scpWiki.png) | ![SCP Card](pictures_README/scpWiki2.png) |
+
+## 🎥 Demo Video
+
 You can see the application in this video: [SCP Secure Database System - Demo Video]()
 
 ---
 
-## 📜 License
+## TO DO List
 
-This project is open source and under the MIT license. Check the LICENSE file for more details.
+- [] Add more user roles and permissions.
+- [] Enhance frontend with more interactive features (AJAX).
+- [] Improve the aesthetics of alerts.
+- [] More lore SCP Foundation integration.
+- [] Add notifications system. (This maybe is randomly sending alerts to users about containment breaches, etc.)
 
 ---
 Secure. Contain. Protect.

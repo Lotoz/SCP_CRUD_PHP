@@ -13,7 +13,15 @@ require_once 'views/templates/header.php';
                 <h2 class="mb-4" style="font-family: var(--font-mono); color: var(--highlight-color); border-bottom: 2px solid var(--accent-color);">
                     <i class="fas fa-file-medical"></i> CREATE NEW FILE
                 </h2>
-
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <?php
+                        echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
+                        unset($_SESSION['error']);
+                        ?>
+                    </div>
+                <?php endif; ?>
                 <form action="index.php?action=anomalies_store" method="POST" enctype="multipart/form-data" id="createForm">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">

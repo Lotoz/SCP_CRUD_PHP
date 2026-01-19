@@ -3,7 +3,7 @@ $pageTitle = "Modify SCP File";
 require_once 'views/templates/header.php';
 ?>
 
-<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/CRUD/anomalies/assets/styles/edit.css">
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/CRUD/anomalies/assets/styles/create.css">
 
 <main class="container mt-4">
     <div class="row justify-content-center">
@@ -14,18 +14,13 @@ require_once 'views/templates/header.php';
                     <i class="fas fa-edit"></i> UPDATE FILE: <?= htmlspecialchars($anomaly->getId()) ?>
                 </h2>
                 <?php if (isset($_SESSION['error'])): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
-                        style="font-family: var(--font-mono); border: 2px solid var(--alert-color); color: #000;">
-
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>ERROR-SCP-DATA: </strong>
-                        <?= htmlspecialchars($_SESSION['error']) ?>
-
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <?php
+                        echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
+                        unset($_SESSION['error']);
+                        ?>
                     </div>
-                    <?php
-                    unset($_SESSION['error']);
-                    ?>
                 <?php endif; ?>
                 <form action="index.php?action=anomalies_update" method="POST" enctype="multipart/form-data" id="createForm">
 

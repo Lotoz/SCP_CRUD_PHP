@@ -4,12 +4,10 @@ require_once 'models/Site.php';
 require_once 'interfaces/ISiteRepository.php';
 
 /**
- * SiteController - Containment Site Management
- *
- * Handles the creation and management of SCP Containment Sites.
- * STRICT SECURITY: Only Level 5 personnel (O5 Council/Site Directors) can access these functions.
- * Little note for curiosity: In this controller, the errores are shown using JavaScript alerts to ensure immediate visibility. Not use the $_SESSION method.
- * Because i wanna try something different and see how it works in practice.
+ * Class SiteController
+ * * Handles the CRUD operations for SCP Containment Sites.
+ * Sites are critical infrastructure, so this controller enforces strict security.
+ * * SECURITY: Requires Level 5 Clearance (O5 Council / Site Directors).
  */
 class SiteController
 {
@@ -26,13 +24,13 @@ class SiteController
     public function index()
     {
         $csrf_token = SessionManager::generateCSRFToken();
-        $this->verifyAuth(); // Level 5 check
+        $this->verifyAuth(); // Strict check
         $sitesList = $this->repository->getAll();
         require_once 'views/CRUD/sites/sites.php';
     }
 
     /**
-     * Displays the form to establish a new Site.
+     * Opens the form to commission a new Site.
      */
     public function create()
     {
@@ -42,8 +40,7 @@ class SiteController
     }
 
     /**
-     * Stores a new Site record (POST).
-     * Validates that Name and Location are provided. Admin ID is optional.
+     * Stores a new Site in the database.
      */
     public function store()
     {
@@ -51,55 +48,63 @@ class SiteController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // 1. Sanitize Input
+            // 1. Sanitize Inputs
             $name = filter_input(INPUT_POST, 'name_sitio', FILTER_SANITIZE_SPECIAL_CHARS);
             $ubicacion = filter_input(INPUT_POST, 'ubicacion', FILTER_SANITIZE_SPECIAL_CHARS);
 
-            // Admin ID is optional (some sites might be automated or pending assignment)
+            // Administrator ID is optional (Site might not have a Director yet)
             $adminId = filter_input(INPUT_POST, 'id_administrador', FILTER_SANITIZE_SPECIAL_CHARS);
             $adminId = !empty($adminId) ? $adminId : null;
 
+            // 2. Validation
             if (empty($name) || empty($ubicacion)) {
-                echo "<script>alert('Error: Name and Location are required.'); window.history.back();</script>";
+                $_SESSION['error'] = "Error: Name and Location are required.";
+                header("Location: index.php?action=sites_create");
                 exit;
             }
 
-            // Create Site Object (ID is null for new entries)
+            // Create Site Object (ID is null because it's auto-increment)
             $site = new Site(null, $name, $ubicacion, $adminId);
 
             try {
                 $this->repository->create($site);
+
+                // Success: Close the popup
                 echo "<script>
                         alert('Containment Site established successfully.');
                         if(window.opener){ window.opener.location.reload(); }
                         window.close();
                       </script>";
             } catch (Exception $e) {
-                echo "<script>alert('Database Error: " . addslashes(htmlspecialchars($e->getMessage())) . "'); window.history.back();</script>";
+                // Error: Redirect to create form
+                $_SESSION['error'] = "Not valid, try again.";
+                header("Location: index.php?action=sites_create");
             }
             exit;
         }
     }
 
     /**
-     * Displays the edit form for a specific Site.
-     * Validates that the Site ID is a valid integer before querying.
+     * Opens the edit form.
+     * Validates that the ID passed in the URL is a valid Integer.
      */
     public function edit($id)
     {
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
 
-        // Site IDs are Auto-Increment Integers, so we strictly validate the type
+        // Security: Ensure ID is an integer to prevent SQL injection attempts via URL
         if (!filter_var($id, FILTER_VALIDATE_INT)) {
-            echo "<script>alert('Invalid Site ID.'); window.close();</script>";
+            $_SESSION['error'] = "Invalid Site ID.";
+            header("Location: index.php?action=sites_index");
             exit;
         }
 
         $site = $this->repository->getById($id);
 
         if (!$site) {
-            echo "<script>alert('Site not found.'); window.close();</script>";
+            $_SESSION['error'] = "Site not found.";
+            header("Location: index.php?action=sites_index");
             exit;
         }
 
@@ -107,7 +112,7 @@ class SiteController
     }
 
     /**
-     * Updates an existing Site (POST).
+     * Updates site protocols/information.
      */
     public function update()
     {
@@ -121,8 +126,13 @@ class SiteController
             $adminId = filter_input(INPUT_POST, 'id_administrador', FILTER_SANITIZE_SPECIAL_CHARS);
             $adminId = !empty($adminId) ? $adminId : null;
 
+            // Validate mandatory fields
             if (!$id || empty($name) || empty($ubicacion)) {
-                echo "<script>alert('Error: Invalid Data.'); window.history.back();</script>";
+                $_SESSION['error'] = "Error: Invalid Data provided.";
+
+                // Logic to determine where to redirect (List vs Edit Form)
+                $redirect = $id ? "index.php?action=sites_edit&id=$id" : "index.php?action=sites_index";
+                header("Location: $redirect");
                 exit;
             }
 
@@ -130,21 +140,24 @@ class SiteController
 
             try {
                 $this->repository->update($site);
+
+                // Success
                 echo "<script>
                         alert('Site protocols updated.');
                         if(window.opener){ window.opener.location.reload(); }
                         window.close();
                       </script>";
             } catch (Exception $e) {
-                echo "<script>alert('Error: " . addslashes(htmlspecialchars($e->getMessage())) . "'); window.history.back();</script>";
+                // Error
+                $_SESSION['error'] = "Not valid, try again.";
+                header("Location: index.php?action=sites_edit&id=$id");
             }
             exit;
         }
     }
 
     /**
-     * Decomissions (Deletes) a Site.
-     * Requires POST method to prevent accidental deletion via URL.
+     * Deletes a site.
      */
     public function delete()
     {
@@ -161,13 +174,13 @@ class SiteController
     }
 
     /**
-     * Enforces Authorization.
-     * STRICT: Level 5 Clearance is mandatory for any Site operation.
+     * Internal helper for authorization.
+     * Level 5 is required for Site management.
      */
     private function verifyAuth()
     {
         if (!isset($_SESSION['user_id']) || $_SESSION['level'] < 5) {
-            $_SESSION['error'] = "Access Denied: Level 5 Clearance required for Site Management.";
+            $_SESSION['error'] = "Access Denied: Level 5 Clearance required.";
             header('Location: index.php?action=dashboard');
             exit;
         }

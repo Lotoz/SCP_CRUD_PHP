@@ -34,9 +34,12 @@ require_once 'views/templates/header.php';
                     <i class="fas fa-clipboard-list"></i> NEW ASSIGNMENT
                 </h2>
                 <?php if (isset($_SESSION['error'])): ?>
-                    <div class="alert alert-danger" style="font-family: var(--font-mono);">
-                        <?= htmlspecialchars($_SESSION['error']);
-                        unset($_SESSION['error']); ?>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <?php
+                        echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
+                        unset($_SESSION['error']);
+                        ?>
                     </div>
                 <?php endif; ?>
                 <form action="index.php?action=task_store" method="POST" id="createTaskForm">

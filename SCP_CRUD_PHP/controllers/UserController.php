@@ -77,10 +77,9 @@ class UserController
                 exit();
             }
 
-            // Validate Clearance Level (Must be 0-5)
-            // Note: >10 check is redundant if >5 is checked, but kept for robustness against logic changes
-            if ($level === false || $level < 0 || $level > 5) {
-                $_SESSION['error'] = "PROTOCOL ERROR: The clearance level must be an integer between 0 and 5.";
+            // Validate Clearance Level Range
+            if ($level === false || $level < 0 || $level > 10) {
+                $_SESSION['error'] = "PROTOCOL ERROR: The clearance level must be an integer between 0 and 5.(or less than 10)";
                 header("Location: index.php?action=users_create");
                 exit;
             }
@@ -110,12 +109,12 @@ class UserController
                 if ($e->getCode() == '23000') {
                     $_SESSION['error'] = "DUPLICATE ENTRY: The ID '$id' is already in use.";
                 } else {
-                    $_SESSION['error'] = "DATABASE ERROR: " . $e->getMessage();
+                    $_SESSION['error'] = "DATABASE ERROR. Please try again later. ";
                 }
                 header("Location: index.php?action=users_create");
                 exit;
             } catch (Exception $e) {
-                $_SESSION['error'] = "SYSTEM ERROR: " . $e->getMessage();
+                $_SESSION['error'] = "SYSTEM ERROR. Could not register personnel. ";
                 header("Location: index.php?action=users_create");
                 exit;
             }

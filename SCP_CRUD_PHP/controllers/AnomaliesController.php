@@ -118,7 +118,7 @@ class AnomaliesController
                 if (move_uploaded_file($_FILES['img_file']['tmp_name'], $targetPath)) {
                     $img_url = $targetPath;
                 } else {
-                    $_SESSION['error'] = "UPLOAD FAILED: Check folder permissions in Linux.";
+                    $_SESSION['error'] = "UPLOAD FAILED: Check folder permissions in Linux or MacOS. (Or file too large)";
                     header("Location: index.php?action=anomalies_create");
                     exit;
                 }
@@ -141,7 +141,7 @@ class AnomaliesController
                         window.close();
                       </script>";
             } catch (Exception $e) {
-                $_SESSION['error'] = "DATABASE ERROR: " . $e->getMessage();
+                $_SESSION['error'] = "DATABASE ERROR: Could not register anomaly. It might already exist.";
                 header("Location: index.php?action=anomalies_create");
                 exit;
             }
@@ -249,12 +249,12 @@ class AnomaliesController
                 if ($e->getCode() == '23000') {
                     $_SESSION['error'] = "PROTOCOL ERROR: The ID '{$newId}' is already assigned to another anomaly.";
                 } else {
-                    $_SESSION['error'] = "DATABASE ERROR: " . $e->getMessage();
+                    $_SESSION['error'] = "DATABASE ERROR. ";
                 }
                 header("Location: index.php?action=anomalies_edit&id=" . urlencode($originalId));
                 exit;
             } catch (Exception $e) {
-                $_SESSION['error'] = "SYSTEM ERROR: " . $e->getMessage();
+                $_SESSION['error'] = "SYSTEM ERROR. Please try again later.";
                 header("Location: index.php?action=anomalies_edit&id=" . urlencode($originalId));
                 exit;
             }
@@ -287,7 +287,7 @@ class AnomaliesController
             try {
                 $this->repository->delete($id);
             } catch (Exception $e) {
-                $_SESSION['error'] = "DELETION FAILED: " . $e->getMessage();
+                $_SESSION['error'] = "DELETION FAILED. ";
             }
         }
 

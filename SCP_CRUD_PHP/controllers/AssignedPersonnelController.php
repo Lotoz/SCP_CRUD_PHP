@@ -4,8 +4,10 @@ require_once 'models/AssignedPersonnel.php';
 require_once 'interfaces/IAssignedPersonnelRepository.php';
 
 /**
- * Controller for managing assignments between Personnel (Users) and SCPs.
- * Handles the Many-to-Many relationship logic and Role updates.
+ * Class AssignedPersonnelController
+ * * Manages the Many-to-Many relationship between Personnel (Users) and SCPs.
+ * This controller handles assigning staff to specific anomalies and defining their roles (e.g., 'Lead Researcher', 'Security').
+ * * SECURITY: Requires Level 4 Clearance.
  */
 class AssignedPersonnelController
 {
@@ -17,18 +19,25 @@ class AssignedPersonnelController
     }
 
     /**
-     * Lists all active personnel assignments.
+     * Lists all current assignments.
+     * Accessible only by authorized personnel.
      */
     public function index()
     {
+        // Generate CSRF token for forms in the view
         $csrf_token = SessionManager::generateCSRFToken();
-        $this->verifyAuth(); // Enforces Level 4 check
+
+        // Security Check: Enforce Level 4 clearance
+        $this->verifyAuth();
+
+        // Retrieve all records and load the view
         $assignments = $this->repository->getAll();
         require_once 'views/CRUD/assigned/assigned.php';
     }
 
     /**
-     * Opens the assignment creation form.
+     * Shows the form to create a new assignment.
+     * Intended to be opened in a pop-up window.
      */
     public function create()
     {
@@ -38,8 +47,7 @@ class AssignedPersonnelController
     }
 
     /**
-     * Stores a new assignment (POST).
-     * Links a User to an SCP with a specific role.
+     * Processes the creation of a new assignment (POST request).
      */
     public function store()
     {
@@ -47,49 +55,59 @@ class AssignedPersonnelController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // 1. Sanitize inputs
+            // 1. Sanitize input to prevent XSS and injection
             $userId = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_SPECIAL_CHARS);
             $scpId = filter_input(INPUT_POST, 'scp_id', FILTER_SANITIZE_SPECIAL_CHARS);
             $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_SPECIAL_CHARS);
 
-            // Validate mandatory relationship fields
+            // 2. Validation: Ensure both IDs are present
             if (empty($userId) || empty($scpId)) {
-                echo "<script>alert('Error: User ID and SCP ID are required.'); window.history.back();</script>";
+                // Set error message in Session (Flash Message)
+                $_SESSION['error'] = "Error: User ID and SCP ID are required.";
+                // Redirect back to the form to show the alert
+                header("Location: index.php?action=assigned_create");
                 exit;
             }
 
+            // 3. Create the Model object
             $assignment = new AssignedPersonnel($userId, $scpId, $role);
 
             try {
+                // Attempt to save to the database
                 $this->repository->create($assignment);
-                // UX: Refresh parent window to show new data, then close popup
+
+                // SUCCESS HANDLER:
+                // Since this view is often opened in a popup/modal, we use JS to:
+                // 1. Show a success alert.
+                // 2. Refresh the parent window (the list).
+                // 3. Close this popup.
                 echo "<script>
                         alert('Personnel assigned successfully.');
                         if(window.opener){ window.opener.location.reload(); }
                         window.close();
                       </script>";
             } catch (PDOException $e) {
-                // Handle duplicate assignments (Composite Primary Key violation)
-                if (strpos($e->getMessage(), '23000') !== false) {
-                    echo "<script>alert('Error: Duplicate entry or Invalid IDs.'); window.history.back();</script>";
-                } else {
-                    echo "<script>alert('Database Error: " . addslashes(htmlspecialchars($e->getMessage())) . "'); window.history.back();</script>";
-                }
+                // ERROR HANDLER:
+                // If it fails (e.g., User is already assigned to this SCP), set a generic error.
+                // We hide the specific SQL error for security reasons.
+                $_SESSION['error'] = "Not valid: Duplicate entry or Invalid IDs provided.";
+                header("Location: index.php?action=assigned_create");
             }
             exit;
         }
     }
 
     /**
-     * Opens the edit form.
-     * Requires BOTH User ID and SCP ID to identify the record (Composite Key).
+     * Shows the edit form.
+     * NOTE: Since this is a Many-to-Many table, the Primary Key is composite (User ID + SCP ID).
+     * We need both 'uid' and 'sid' from the URL to identify the record.
      */
     public function edit()
     {
         $csrf_token = SessionManager::generateCSRFToken();
         $this->verifyAuth();
 
-        // Sanitize GET parameters used for lookups
+        // Retrieve composite keys from URL parameters
         $uid = isset($_GET['uid']) ? htmlspecialchars($_GET['uid']) : null;
         $sid = isset($_GET['sid']) ? htmlspecialchars($_GET['sid']) : null;
 
@@ -98,36 +116,42 @@ class AssignedPersonnelController
         if ($assignment) {
             require_once 'views/CRUD/assigned/assignedEdit.php';
         } else {
-            echo "<script>alert('Assignment record not found.'); window.close();</script>";
+            // If the record doesn't exist, redirect with error
+            $_SESSION['error'] = "Assignment record not found.";
+            header("Location: index.php?action=assigned_index");
+            exit;
         }
     }
 
     /**
-     * Updates an existing assignment (POST).
-     * Typically updates the 'Role' while keeping IDs constant.
+     * Updates an existing assignment (POST request).
+     * Usually used to change the 'Role' of a user for a specific SCP.
      */
     public function update()
     {
         $this->verifyAuth();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // IDs are retrieved to identify the row, but usually not changed here
+            // Retrieve data
             $userId = filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_SPECIAL_CHARS);
             $scpId = filter_input(INPUT_POST, 'scp_id', FILTER_SANITIZE_SPECIAL_CHARS);
-            // The Role is the main editable field in this context
             $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_SPECIAL_CHARS);
 
             $assignment = new AssignedPersonnel($userId, $scpId, $role);
 
             try {
                 $this->repository->update($assignment);
+
+                // Success: Alert and close popup
                 echo "<script>
                         alert('Assignment role updated.');
                         if(window.opener){ window.opener.location.reload(); }
                         window.close();
                       </script>";
             } catch (Exception $e) {
-                echo "<script>alert('Error: " . addslashes(htmlspecialchars($e->getMessage())) . "'); window.history.back();</script>";
+                // Error: Redirect back to edit form with the specific IDs
+                $_SESSION['error'] = "Action failed: Unable to update assignment role.";
+                header("Location: index.php?action=assigned_edit&uid=$userId&sid=$scpId");
             }
             exit;
         }
@@ -135,7 +159,7 @@ class AssignedPersonnelController
 
     /**
      * Deletes an assignment.
-     * Requires both User ID (uid) and SCP ID (sid) via POST.
+     * Uses POST to prevent accidental deletion via URL traversal.
      */
     public function delete()
     {
@@ -148,13 +172,14 @@ class AssignedPersonnelController
             $this->repository->delete($userId, $scpId);
         }
 
+        // Redirect back to the list
         header('Location: index.php?action=assigned_index');
         exit;
     }
 
     /**
-     * Enforces Authorization.
-     * STRICT: Only users with Clearance Level 4 or higher can manage assignments.
+     * Internal helper to verify Security Clearance.
+     * Redirects to Dashboard if the user is below Level 4.
      */
     private function verifyAuth()
     {

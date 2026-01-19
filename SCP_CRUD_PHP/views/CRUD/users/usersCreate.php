@@ -2,29 +2,7 @@
 $pageTitle = "New Personnel Onboarding";
 require_once 'views/templates/header.php';
 ?>
-
-<style>
-    header nav,
-    .logo-area .security-level {
-        display: none;
-    }
-
-    header {
-        justify-content: center;
-        border-bottom: none;
-    }
-
-    body {
-        padding-bottom: 2rem;
-        background-color: var(--bg-color);
-    }
-
-    .form-section {
-        background: var(--card-bg);
-        padding: 20px;
-        border: 1px solid var(--accent-color);
-    }
-</style>
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/CRUD/users/assets/styles/main.css">
 
 <main class="container mt-4">
     <div class="row justify-content-center">
@@ -35,15 +13,12 @@ require_once 'views/templates/header.php';
                     <i class="fas fa-id-card"></i> PERSONNEL RECRUITMENT FORM
                 </h2>
                 <?php if (isset($_SESSION['error'])): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
-                        style="border: 1px solid red; color: #000;">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>ERROR:</strong>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
                         <?php
                         echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
                         unset($_SESSION['error']);
                         ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
                 <form action="index.php?action=users_store" method="POST" id="createUserForm">
@@ -101,8 +76,8 @@ require_once 'views/templates/header.php';
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Clearance Level</label>
-                            <input type="number" name="level" id="level" class="form-control" min="1" max="5" value="1">
-                            <small class="text-muted">1 = Janitor, 5 = O5 Council</small>
+                            <input type="number" name="level" id="level" class="form-control" min="0" max="10" value="1">
+                            <small class="text-muted"> 0 = class-D ,1 = Janitor, 5 = O5 Council</small>
                             <div id="errorLevel" hidden></div>
                         </div>
 

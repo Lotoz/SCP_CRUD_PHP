@@ -3,28 +3,7 @@ $pageTitle = "Establish New Site";
 require_once 'views/templates/header.php';
 ?>
 
-<style>
-    header nav,
-    .logo-area .security-level {
-        display: none;
-    }
-
-    header {
-        justify-content: center;
-        border-bottom: none;
-    }
-
-    body {
-        padding-bottom: 2rem;
-        background-color: var(--bg-color);
-    }
-
-    .form-section {
-        background: var(--card-bg);
-        padding: 20px;
-        border: 1px solid var(--accent-color);
-    }
-</style>
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/CRUD/sites/assets/styles/sitesCreate.css">
 
 <main class="container mt-4">
     <div class="row justify-content-center">
@@ -34,7 +13,15 @@ require_once 'views/templates/header.php';
                 <h2 class="mb-4" style="font-family: var(--font-mono); color: var(--highlight-color); border-bottom: 2px solid var(--accent-color);">
                     <i class="fas fa-industry"></i> NEW SITE CONSTRUCTION
                 </h2>
-
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <?php
+                        echo htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8');
+                        unset($_SESSION['error']);
+                        ?>
+                    </div>
+                <?php endif; ?>
                 <form action="index.php?action=sites_store" method="POST" id="createSiteForm">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">

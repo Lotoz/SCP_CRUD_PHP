@@ -61,15 +61,17 @@ require_once 'views/templates/header.php';
                             <?php if ($scp->hasImage()): ?>
                                 <img src="<?php echo BASE_URL . htmlspecialchars($scp->getImgUrl()); ?>"
                                     alt="<?php echo htmlspecialchars($scp->getNickname()); ?>"
-                                    class="card-img-top scp-img">
+                                    class="scp-img" width="200" height="350">
                             <?php else: ?>
-                                <div class="d-flex justify-content-center align-items-center h-100 text-white bg-secondary">
-                                    <span>[IMAGE REDACTED]</span>
+                                <div class="d-flex justify-content-center align-items-center w-100 h-100 text-white bg-secondary">
+                                    <span style="font-family: 'Share Tech Mono'; letter-spacing: 1px;">[IMAGE REDACTED]</span>
                                 </div>
                             <?php endif; ?>
 
                             <div class="overlay">
-                                <a href="index.php?action=wiki_show&id=<?php echo $scp->getId(); ?>" class="text-white text-decoration-none stretched-link">
+                                <a href="index.php?action=wiki_show&id=<?php echo $scp->getId(); ?>"
+                                    class="text-white text-decoration-none fw-bold stretched-link"
+                                    style="font-family: 'Share Tech Mono'; letter-spacing: 2px; border: 1px solid #fff; padding: 10px 20px;">
                                     ACCESS FILE
                                 </a>
                             </div>
@@ -87,13 +89,6 @@ require_once 'views/templates/header.php';
                                 echo strlen($desc) > 120 ? substr($desc, 0, 120) . '...' : $desc;
                                 ?>
                             </p>
-                        </div>
-
-                        <div class="card-footer bg-transparent border-top-0 pb-3">
-                            <a href="index.php?action=wiki_show&id=<?php echo $scp->getId(); ?>"
-                                class="btn btn-outline-dark w-100" style="font-family: 'Share Tech Mono';">
-                                ACCESS FILE DATA <i class="fas fa-file-alt"></i>
-                            </a>
                         </div>
                     </div>
                 </div>

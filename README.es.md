@@ -1,14 +1,27 @@
-# 📂 SCP Foundation Secure Database System
+# Sistema de Base de Datos Segura de la Fundación SCP
 
-![SCP Logo](https://upload.wikimedia.org/wikipedia/commons/e/ec/SCP_Foundation_%28edificio%29_logo.svg)
+<div align="center">
 
-> **⚠️ AVISO:** Este software es un **proyecto educativo** desarrollado para demostrar competencias en **PHP Nativo, POO y Arquitectura MVC**. No está diseñado para uso en entornos de producción crítica.
+<img src="./pictures_README/banner.png" alt="Project Banner" width="600px" height="800px">
+
+![Tech Stack](https://skillicons.dev/icons?i=php,mysql,html,css,js,bootstrap,vscode)
+
+![Status](https://img.shields.io/badge/Status-En%20Desarrollo-green?style=for-the-badge)
+![License](https://img.shields.io/badge/Licencia-GPLv3-blue?style=for-the-badge)
+
+</div>
+
+<p align="center">
+  <a href="README.md">🇺🇸 Versión README en Inglés</a>
+</p>
+
+> **⚠️ ADVERTENCIA:** Este software es un **proyecto educativo** desarrollado para demostrar habilidades en **PHP Nativo, OOP y Arquitectura MVC**. No está diseñado para su uso en entornos de producción críticos.
 
 ## 📖 Descripción General
 
-El **SCP Secure Database System** es una aplicación web *Full-Stack* que simula la base de datos clasificada de la Fundación SCP. Permite la gestión segura de expedientes de anomalías, administración de personal, asignación de sitios de contención y tareas operativas.
+El **Sistema de Base de Datos Segura SCP** es una aplicación web *Full-Stack* que simula la base de datos clasificada de la Fundación SCP. Permite la gestión segura de archivos de anomalías, administración de personal, asignaciones de sitios de contención y tareas operativas.
 
-El sistema está construido siguiendo estrictamente el patrón **Modelo-Vista-Controlador (MVC)** sin el uso de frameworks, garantizando un código limpio, modular y escalable.
+El sistema está construido estrictamente siguiendo el patrón **Modelo-Vista-Controlador (MVC)** sin usar frameworks, asegurando un código limpio, modular y escalable.
 
 ---
 
@@ -16,15 +29,15 @@ El sistema está construido siguiendo estrictamente el patrón **Modelo-Vista-Co
 
 ### 🔐 Seguridad y Autenticación
 
-* **Sistema de Login:** Roles y Niveles de Seguridad (1 al 5).
-* **Protección:** Hashing de contraseñas (`Bcrypt`), Tokens CSRF en formularios y protección contra *Session Fixation*.
-* **Prevención de Errores:** Bloqueo de auto-eliminación (un administrador no puede borrar su propia cuenta).
+* **Sistema de Login:** Roles y Niveles de Seguridad (1 a 5).
+* **Protección:** Hashing de contraseñas (`Bcrypt`), tokens CSRF en formularios y protección contra *Session Fixation*.
+* **Prevención de Errores:** Bloqueo de autoeliminación (un administrador no puede eliminar su propia cuenta).
 
 ### 📂 Gestión de Anomalías (SCPs)
 
-* **CRUD Completo:** Crear, leer, editar y borrar expedientes.
-* **Gestión Multimedia:** Subida de imágenes con **renombramiento automático** basado en el ID del SCP.
-* **Wiki Pública:** Visualización de tarjetas dinámicas con estilos según la clase del objeto (Safe, Euclid, Keter).
+* **CRUD Completo:** Crear, leer, editar y eliminar archivos.
+* **Gestión Multimedia:** Subida de imágenes con **renombrado automático** basado en el ID del SCP.
+* **Wiki Pública:** Visualización dinámica de tarjetas con estilos según la clase del objeto (Safe, Euclid, Keter).
 
 ### 🛠️ Administración de Personal
 
@@ -35,7 +48,7 @@ El sistema está construido siguiendo estrictamente el patrón **Modelo-Vista-Co
 
 ## ⚙️ Tecnologías Utilizadas
 
-* **Backend:** PHP 8.2+ (Nativo, POO).
+* **Backend:** PHP 8.2+ (Nativo, OOP).
 * **Base de Datos:** MySQL / MariaDB (InnoDB).
 * **Frontend:** HTML5, CSS3, Bootstrap 5, JavaScript (ES6).
 * **Servidor:** Apache (XAMPP/LAMPP).
@@ -46,28 +59,27 @@ El sistema está construido siguiendo estrictamente el patrón **Modelo-Vista-Co
 
 Este proyecto implementa reglas estrictas para simular la burocracia de la Fundación SCP:
 
-1. **Nomenclatura SCP:** Todos los IDs de anomalías deben comenzar estrictamente con **`SCP-`** (ej: `SCP-173`).
+1. **Nomenclatura SCP:** Todos los IDs de anomalías deben comenzar estrictamente con **`SCP-`** (ej., `SCP-173`).
 2. **Protocolo de Contención:**
     * Las clases **SAFE, EUCLID y NEUTRALIZED** *deben* tener un Sitio de Contención asignado obligatoriamente.
     * Las clases **KETER y THAUMIEL** son las únicas que pueden tener ubicación desconocida (`NULL`).
-3. **Integridad de Usuarios:**
-    * Los Nombres de Usuario solo aceptan letras, números, guiones medios y bajos (Regex: `/^[a-zA-Z0-9_-]+$/`).
-    * Un usuario **Nivel 0 (Clase-D)** tiene acceso de *Solo Lectura* a sus tareas.
+3. **Integridad de Usuario:**
+    * Los nombres de usuario solo aceptan letras, números, guiones y guiones bajos (Regex: `/^[a-zA-Z0-9_-]+$/`).
+    * Un usuario de Nivel 0 (Clase-D) tiene acceso *Solo Lectura* a sus tareas.
 
 ---
 
 ## 🔧 Instalación y Despliegue
 
-Sigue estos pasos para levantar el proyecto en tu entorno local:
+Sigue estos pasos para configurar el proyecto en tu entorno local:
 
-### 1. Clonar el Repositorio
+### 1. Clona el Repositorio
 
 ```bash
-git clone [https://github.com/tu-usuario/scp-crud-php.git](https://github.com/tu-usuario/scp-crud-php.git)
-cd scp-crud-php
+git clone https://github.com/Lotoz/SCP_CRUD_PHP
 ```
 
-### 2. Configurar el Servidor Local
+### 2. Configura el Servidor Local
 
 1. Base de Datos
 
@@ -79,48 +91,115 @@ cd scp-crud-php
 
 2. Configuración
 
-Edita el archivo de configuración con tus credenciales locales: 📂 SCP_CRUD_PHP/config/Database.php
-PHP
+Edita el archivo de configuración con tus credenciales locales: 📂 SCP_CRUD_PHP/config/Database.php (Si quieres, puedes usar los predeterminados: view.)
 
+```php
 private $host = "localhost";
 private $db_name = "scp_data";
-private $username = "view"; // Tu usuario
+private $username = ""; // Tu nombre de usuario
 private $password = "";     // Tu contraseña
+```
 
-Por defecto, las credenciales son: view / yX/I!geU1xKbG3F[ para propósitos de prueba.
+Las credenciales predeterminadas son view / yX/I!geU1xKbG3F[ para fines de prueba.
 
-3. Permisos (Solo Linux/Mac)
+3. Copia el directorio a la carpeta raíz de tu servidor (ej., `htdocs` para XAMPP).
 
-Asegúrate de que la carpeta de subidas tenga permisos de escritura:
-Bash
+Debes copiar SCP_CRUD_PHP/ a la raíz del servidor. Este directorio contiene todo el código fuente.
 
+4. Permisos (Solo Linux/Mac)
+
+Asegúrate de que la carpeta de subida tenga permisos de escritura:
+
+```bash
 chmod -R 777 views/CRUD/anomalies/assets/img/
+```
+5. Habilita tu servidor o inicia XAMPP/LAMPP.
 
-📂 Estructura del Proyecto
-Plaintext
+6. Accede a la aplicación a través de tu navegador:
 
+```bash
+http://localhost/SCP_CRUD_PHP/
+```
+
+7. ¡Disfruta explorando el Sistema de Base de Datos Segura de la Fundación SCP!
+
+---
+
+## 📂 Estructura del Proyecto
+
+```
 /
 ├── DATABASE/           # Scripts SQL y Seeders
-├── EXTRA/              # Credenciales de prueba y notas
-├── pictures_README/    # Imágenes para documentación
+├── EXTRA/              # Credenciales de Prueba y Notas
+├── pictures_README/    # Imágenes para Documentación
 ├── SCP_CRUD_PHP/       # CÓDIGO FUENTE DE LA APLICACIÓN
-│   ├── config/         # Conexión DB y SessionManager
-│   ├── controllers/    # Lógica de negocio
+│   ├── config/         # Conexión BD y SessionManager
+│   ├── controllers/    # Lógica de Negocio
 │   ├── models/         # Entidades
-│   ├── repositories/   # Consultas SQL (Pattern Repository)
-│   ├── views/          # Interfaz de usuario (HTML/PHP)
-│   └── index.php       # Router principal
+│   ├── repositories/   # Consultas SQL (Patrón Repository)
+│   ├── views/          # Interfaz de Usuario (HTML/PHP)
+│   └── index.php       # Router Principal
 └── README.md           # Este archivo
+```
 
-🔑 Credenciales de Acceso (Demo)
+---
+
+## 🔑 Credenciales de Acceso (Demo)
 
 Puedes encontrar una lista completa de usuarios de prueba en la carpeta 📂 EXTRA/.
 
 ---
 
-## 📜 Licencia
+### 📸 Imágenes
 
-Este proyecto es de código abierto y está bajo la licencia MIT. Consulta el archivo LICENSE para más detalles.
+| Login | Registro | Dashboard |
+|-------|----------|-----------|
+| ![Pantalla de Login](pictures_README/login.png) | ![Pantalla de Registro](pictures_README/register.png) | ![Dashboard](pictures_README/admin.png) |
+
+**Temas Disponibles:**
+
+| Gears | Ice | Sophie |
+|-------|-----|--------|
+| ![Tema Gears](pictures_README/gears.png) | ![Tema Ice](pictures_README/ice.png) | ![Tema Sophie](pictures_README/sophie.png) |
+
+| Unicorn | Clef | Admin |
+|---------|------|-------|
+| ![Tema Unicorn](pictures_README/unicorn.png) | ![Tema Clef](pictures_README/clef.png) | ![Tema Admin](pictures_README/admin.png) |
+
+## Ejemplo de Gestión de Anomalías
+
+| Anomalías | Editar | Crear |
+|---------  |------| -------|
+| ![Anomalías](pictures_README/anomalies.png) | ![Tema Clef](pictures_README/editAnomalies.png) | ![Tema Admin](pictures_README/createAnomalies.png) |
+
+## Example of view Class-D (Level 0)
+
+| Tasks | View SCPs |
+|-------|-----------|
+| ![Tasks](pictures_README/classD1.png) | ![View SCPs](pictures_README/classD2.png) |
+
+## SCP Wiki Public View
+
+| SCP Wiki | SCP  |
+|----------|------|
+| ![SCP Wiki](pictures_README/scpWiki.png) | ![SCP Card](pictures_README/scpWiki2.png) |
+
+## 🎥 Video Demo
+
+Puedes ver la aplicación en este video: [Sistema de Base de Datos Segura SCP - Video Demo]()
+
+---
+
+## Lista de Tareas Pendientes
+
+- [] Implementar Pruebas Unitarias (PHPUnit).
+- [] Agregar más roles de usuario y permisos.
+- [] Mejorar el frontend con más características interactivas (AJAX).
+- [] Mejorar la estética de las alertas.
+- [] Más integración de lore de la Fundación SCP.
+- [] Agregar sistema de notificaciones. (Esto quizás envíe alertas aleatorias a los usuarios sobre brechas de contención, etc.)
 
 ---
 Secure. Contain. Protect.
+
+<div align="center"> <sub>Desarrollado con ❤️ por <a href="https://github.com/Lotoz">Lotoz</a></sub> </div>
