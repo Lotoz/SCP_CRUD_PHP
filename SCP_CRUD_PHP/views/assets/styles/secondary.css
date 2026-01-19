@@ -17,20 +17,20 @@ body {
     background-image:
         radial-gradient(circle at center, transparent 0%, #000 100%),
         linear-gradient(0deg, rgba(0, 0, 0, 0.1) 50%, rgba(255, 255, 255, 0.02) 50%);
-    background-size: 100% 4px; /* Eliminado el 100% 100% para evitar estiramiento feo al scrollear */
-    background-attachment: fixed; /* IMPORTANTE: El fondo se queda quieto al hacer scroll */
-    
+    background-size: 100% 4px;
+    background-attachment: fixed;
+
     color: var(--scp-text);
     font-family: var(--mono);
-    
-    /* --- CORRECCIÓN DE SCROLL Y CENTRADO --- */
-    min-height: 100vh; /* Ocupa al menos toda la pantalla, pero puede crecer */
+
+
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center; 
-    padding: 20px; /* Margen para que no toque los bordes en móviles */
+    align-items: center;
+    padding: 20px;
     box-sizing: border-box;
-    /* overflow: hidden;  <-- ELIMINADO: Esto bloqueaba el scroll */
+
 }
 
 /* --- Contenedor Principal --- */
@@ -43,9 +43,9 @@ body {
     box-shadow: 0 0 30px var(--scp-glow), inset 0 0 50px rgba(0, 0, 0, 0.8);
     position: relative;
     border-radius: 4px;
-    
+
     /* Asegura que haya espacio arriba y abajo si la pantalla es muy pequeña */
-    margin: auto 0; 
+    margin: auto 0;
 }
 
 /* Decoración de esquinas estilo técnico */
@@ -58,7 +58,8 @@ body {
     bottom: -2px;
     background: linear-gradient(45deg, var(--scp-accent) 5%, transparent 5%, transparent 95%, var(--scp-accent) 95%);
     z-index: -1;
-    pointer-events: none; /* Evita bloquear clicks en los bordes */
+    pointer-events: none;
+    /* Evita bloquear clicks en los bordes */
 }
 
 /* --- Cabecera e Imagen --- */
@@ -87,7 +88,8 @@ h1 {
     color: var(--scp-text);
     text-transform: uppercase;
     text-shadow: 0 0 10px var(--scp-glow);
-    line-height: 1.2; /* Mejora lectura en móviles si el título se rompe */
+    line-height: 1.2;
+    /* Mejora lectura en móviles si el título se rompe */
 }
 
 .warning-text {
@@ -155,7 +157,8 @@ h1 {
     color: var(--scp-accent-2);
     font-weight: bolder;
     font-style: italic;
-    background-color: rgba(255, 0, 0, 0.05); /* Fondo muy sutil para resaltar error */
+    background-color: rgba(255, 0, 0, 0.05);
+    /* Fondo muy sutil para resaltar error */
 }
 
 /* --- Footer --- */
@@ -171,20 +174,31 @@ h1 {
 
 /* --- Animaciones --- */
 @keyframes pulse {
-    0% { opacity: 0.7; }
-    50% { opacity: 1; text-shadow: 0 0 10px red; }
-    100% { opacity: 0.7; }
+    0% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 10px red;
+    }
+
+    100% {
+        opacity: 0.7;
+    }
 }
 
 /* --- RESPONSIVIDAD (Móviles) --- */
 @media (max-width: 576px) {
     .box-general {
-        padding: 1.5rem; /* Menos relleno para ganar espacio */
+        padding: 1.5rem;
+        /* Menos relleno para ganar espacio */
         width: 100%;
     }
 
     h1 {
-        font-size: 1.4rem; /* Título más pequeño */
+        font-size: 1.4rem;
+        /* Título más pequeño */
     }
 
     .logoSCP {

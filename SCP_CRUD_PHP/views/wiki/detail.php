@@ -7,7 +7,7 @@ if (!isset($scp)) {
 $pageTitle = "SCP Foundation - " . $scp->getId();
 require_once 'views/templates/header.php';
 ?>
-<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/wiki/assets/styles/detail.css">
+<link rel="stylesheet" href="views/wiki/assets/styles/detail.css">
 
 <main class="container my-4">
 
@@ -70,7 +70,7 @@ require_once 'views/templates/header.php';
                     <span class="label">Addendum:</span> Extended documentation is available.
                     <br><br>
                     <a href="<?php echo htmlspecialchars($scp->getDocExtensa()); ?>" target="_blank" class="text-danger fw-bold">
-                        [ ACCESS FILE ATTACHMENT ]
+                        [<i class="bi bi-shield-lock-fill"></i> ACCESS FILE ATTACHMENT ]
                     </a>
                 </div>
             <?php endif; ?>

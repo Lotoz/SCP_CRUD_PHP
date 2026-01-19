@@ -87,7 +87,7 @@ require_once 'views/templates/header.php';
                                                     class="btn btn-sm btn-outline-danger"
                                                     onclick="return confirm('WARNING: Decommissioning a Site is a major event. Are you sure?');"
                                                     title="Decommission Site">
-                                                    <i class="fas fa-trash-alt"></i>
+                                                    <i class="fas fa-trash-alt"></i> Delete
                                                 </button>
                                             </form>
 

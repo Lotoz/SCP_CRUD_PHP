@@ -95,7 +95,7 @@ require_once 'views/templates/header.php';
 
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
                                                     onclick="return confirm('WARNING: Are you sure you want to expunge this record?');">
-                                                    <i class="fas fa-trash-alt"></i>
+                                                    <i class="bi bi-x-octagon-fill"></i> Neutralized
                                                 </button>
                                             </form>
                                         </div>

@@ -7,13 +7,18 @@ require_once 'views/templates/header.php';
 ?>
 
 <main>
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger" style="font-family: var(--font-mono);">
+            <?= htmlspecialchars($_SESSION['error']);
+            unset($_SESSION['error']); ?>
+        </div>
+    <?php endif; ?>
     <div class="msgUser container">
         <h1>Welcome, <span class="user-name"><?php echo $_SESSION['name'] ?? 'Agent'; ?></span></h1>
         <p>Remember to log off. The Foundation is watching. <br>
             <strong>WARNING:</strong> Unauthorized access will be monitored and terminated.
         </p>
     </div>
-
     <div class="dashboard-grid">
 
         <div class="card taskPendients">
@@ -77,17 +82,6 @@ require_once 'views/templates/header.php';
     </div>
 </main>
 
-<?php if (isset($_SESSION['level']) && $_SESSION['level'] >= 3): ?>
-    <script>
-        function openCreateTask() {
-            const width = 600;
-            const height = 500;
-            const left = (screen.width - width) / 2;
-            const top = (screen.height - height) / 2;
-            window.open('index.php?action=task_create', 'CreateTask', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`);
-        }
-    </script>
-<?php endif; ?>
 
 <?php
 require_once 'views/templates/footer.php';

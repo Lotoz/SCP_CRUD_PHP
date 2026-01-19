@@ -3,7 +3,7 @@ $pageTitle = "Establish New Site";
 require_once 'views/templates/header.php';
 ?>
 
-<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/CRUD/sites/assets/styles/sitesCreate.css">
+<link rel="stylesheet" href="views/CRUD/sites/assets/styles/sitesCreate.css">
 
 <main class="container mt-4">
     <div class="row justify-content-center">

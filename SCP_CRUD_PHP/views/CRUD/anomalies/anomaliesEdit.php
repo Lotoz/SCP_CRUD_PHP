@@ -3,7 +3,7 @@ $pageTitle = "Modify SCP File";
 require_once 'views/templates/header.php';
 ?>
 
-<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/CRUD/anomalies/assets/styles/create.css">
+<link rel="stylesheet" href="views/CRUD/anomalies/assets/styles/create.css">
 
 <main class="container mt-4">
     <div class="row justify-content-center">

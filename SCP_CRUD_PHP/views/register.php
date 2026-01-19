@@ -11,14 +11,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="shortcut icon" href="<?php echo BASE_URL; ?>/assets/img/scpLogo.png" type="image/x-icon">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>views/assets/styles/secondary.css">
+    <link rel="shortcut icon" href="views/assets/img/scpLogo.png" type="image/x-icon">
+    <link rel="stylesheet" href=">views/assets/styles/secondary.css">
 </head>
 
 <body>
     <div class="box-general">
         <div class="header-section">
-            <img src="<?php echo BASE_URL; ?>views/assets/img/scpLogo.png" alt="SCP Logo" class="logoSCP">
+            <img src="views/assets/img/scpLogo.png" alt="SCP Logo" class="logoSCP">
             <h1>REGISTER NEW OPERATIVE</h1>
             <p class="warning-text">AUTHORIZED PERSONNEL REGISTRATION</p>
         </div>
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <script src="<?php echo BASE_URL; ?>views/assets/js/controlRegister.js"></script>
+    <script src="views/assets/js/controlRegister.js"></script>
 </body>
 
 </html>

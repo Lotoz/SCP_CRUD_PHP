@@ -175,12 +175,12 @@ class SiteController
 
     /**
      * Internal helper for authorization.
-     * Level 5 is required for Site management.
+     * Level 3 is required for Site management.
      */
     private function verifyAuth()
     {
-        if (!isset($_SESSION['user_id']) || $_SESSION['level'] < 5) {
-            $_SESSION['error'] = "Access Denied: Level 5 Clearance required.";
+        if (!isset($_SESSION['user_id']) || $_SESSION['level'] < 3) {
+            $_SESSION['error'] = "Access Denied: Level 3 Clearance required.";
             header('Location: index.php?action=dashboard');
             exit;
         }

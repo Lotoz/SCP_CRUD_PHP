@@ -86,7 +86,7 @@ require_once 'views/templates/header.php';
                                             <button type="submit"
                                                 class="btn btn-sm btn-outline-danger"
                                                 onclick="return confirm('WARNING: Deleting this user will move them to the Ex-Employees archive. Continue?');">
-                                                <i class="fas fa-trash-alt"></i> Terminar
+                                                <i class="fas fa-trash-alt"></i> Delete
                                             </button>
                                         </form>
                                     </div>

@@ -4,7 +4,7 @@
   --card-bg: #ffffff;
   --text-color: #333333;
   --accent-color: #444444; /* Gris oscuro */
-  --highlight-color: #000000;
+  --highlight-color: #505050b1;
   --alert-color: #8b0000;
   --font-main: "Roboto", sans-serif;
   --font-mono: "Share Tech Mono", monospace;
@@ -20,6 +20,7 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.6;
+  
 }
 
 /* Header & Nav */

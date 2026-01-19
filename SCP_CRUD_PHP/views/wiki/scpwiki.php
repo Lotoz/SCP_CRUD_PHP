@@ -9,7 +9,7 @@ if (!isset($anomaliesList)) {
 $pageTitle = "SCP Foundation Database - Access Clearance Verified";
 require_once 'views/templates/header.php';
 ?>
-<link rel="stylesheet" href="<?php echo BASE_URL; ?>views/wiki/assets/styles/detail.css">
+<link rel="stylesheet" href="views/wiki/assets/styles/detail.css">
 <main class="container my-5">
 
     <div class="row mb-4">
@@ -32,7 +32,6 @@ require_once 'views/templates/header.php';
             <div class="input-group">
                 <span class="input-group-text bg-dark text-white border-dark" style="font-family: 'Share Tech Mono';">CMD://SEARCH_</span>
                 <input type="text" id="searchInput" class="form-control border-dark" placeholder="Enter Item # or Keywords...">
-                <button class="btn btn-dark" type="button" onclick="alert('Search functionality is handled by the Archives Department.');">EXECUTE</button>
             </div>
         </div>
     </div>
@@ -46,6 +45,7 @@ require_once 'views/templates/header.php';
             </div>
         <?php else: ?>
             <?php foreach ($anomaliesList as $scp): ?>
+
                 <div class="col-md-6 col-lg-4">
                     <div class="card scp-card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
@@ -59,22 +59,14 @@ require_once 'views/templates/header.php';
 
                         <div class="scp-img-container">
                             <?php if ($scp->hasImage()): ?>
-                                <img src="<?php echo BASE_URL . htmlspecialchars($scp->getImgUrl()); ?>"
+                                <img src="<?php echo htmlspecialchars($scp->getImgUrl()); ?>"
                                     alt="<?php echo htmlspecialchars($scp->getNickname()); ?>"
-                                    class="scp-img" width="200" height="350">
+                                    class="scp-img" width="320" height="380">
                             <?php else: ?>
                                 <div class="d-flex justify-content-center align-items-center w-100 h-100 text-white bg-secondary">
                                     <span style="font-family: 'Share Tech Mono'; letter-spacing: 1px;">[IMAGE REDACTED]</span>
                                 </div>
                             <?php endif; ?>
-
-                            <div class="overlay">
-                                <a href="index.php?action=wiki_show&id=<?php echo $scp->getId(); ?>"
-                                    class="text-white text-decoration-none fw-bold stretched-link"
-                                    style="font-family: 'Share Tech Mono'; letter-spacing: 2px; border: 1px solid #fff; padding: 10px 20px;">
-                                    ACCESS FILE
-                                </a>
-                            </div>
                         </div>
 
                         <div class="card-body">
@@ -89,6 +81,13 @@ require_once 'views/templates/header.php';
                                 echo strlen($desc) > 120 ? substr($desc, 0, 120) . '...' : $desc;
                                 ?>
                             </p>
+                            <div class="overlay">
+                                <a href="index.php?action=wiki_show&id=<?php echo $scp->getId(); ?>"
+                                    class="text-decoration-none fw-bold stretched-link"
+                                    style="font-family: 'Share Tech Mono'; letter-spacing: 2px; border: 1px solid #fff; padding: 10px 20px;">
+                                    ACCESS FILE<i class="bi bi-box-arrow-in-down"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -108,7 +107,7 @@ require_once 'views/templates/header.php';
             </div>
         </div>
     </div>
-    <script src="<?php echo BASE_URL; ?>views/assets/js/scpwiki.js"></script>
+    <script src="views/assets/js/scpwiki.js"></script>
 </main>
 
 

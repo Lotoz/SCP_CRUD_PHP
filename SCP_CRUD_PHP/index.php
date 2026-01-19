@@ -1,10 +1,4 @@
 <?php
-
-/**
- * Browsers get lost in the MVC model, so it is necessary to specify the general route.
- */
-define('BASE_URL', 'http://localhost/SCP_CRUD_PHP/');
-
 // I include the configuration and session manager
 require_once 'config/SessionManager.php';
 require_once 'config/Database.php';

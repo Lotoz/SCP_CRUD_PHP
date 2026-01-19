@@ -77,7 +77,7 @@ require_once 'views/templates/header.php';
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-sm btn-outline-secondary"
                                                 onclick="openEditTask(<?= $task->getId() ?>)" title="Update Status">
-                                                <i class="fas fa-edit"></i>
+                                                <i class="fas fa-edit"></i> Edit
                                             </button>
 
                                             <form action="index.php?action=task_delete" method="POST" style="display:inline;">
@@ -85,7 +85,7 @@ require_once 'views/templates/header.php';
                                                 <input type="hidden" name="id" value="<?= $task->getId() ?>">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
                                                     onclick="return confirm('Confirm: Remove this task?');">
-                                                    <i class="fas fa-trash"></i>
+                                                    <i class="fas fa-trash"></i> Delete
                                                 </button>
                                             </form>
                                         </div>
