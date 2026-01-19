@@ -57,7 +57,7 @@ require_once 'views/templates/header.php';
                                     <td>
                                         <?php
                                         $class = strtoupper($scp->getClass());
-                                        $badgeColor = '#6c757d';
+                                        $badgeColor = '#0bd600';
                                         if ($class === 'EUCLID') $badgeColor = '#ffc107';
                                         if ($class === 'KETER') $badgeColor = '#dc3545';
                                         if ($class === 'THAUMIEL') $badgeColor = '#0d6efd';

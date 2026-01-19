@@ -47,8 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // --- VALIDACIÓN 2: Fecha NO VA, revisar luego ---
         if (dateInput && dateInput.value !== '') {
-            const inputDate = new Date(dateInput.value);
-
             // Obtenemos la fecha de hoy y le quitamos la hora (00:00:00) para comparar solo días
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -60,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Solución robusta: comparar strings ISO (YYYY-MM-DD)
             const todayString = new Date().toISOString().split('T')[0];
-            const inputString = inputDate.value;
+            const inputString = dateInput.value;
 
             if (inputString < todayString) {
                 showError(errorDate, 'The target date cannot be in the past.');

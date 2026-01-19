@@ -23,7 +23,24 @@ body {
     #111 2px
   ); 
 }
-
+.text-muted{
+  color:#8a0000 !important;
+}
+h2{
+  color: var(--text-color) !important;
+}
+li{
+  color: var(--text-color) !important;
+}
+.card-header{
+  color: var(--text-color) !important;
+}
+.card-title{
+  color: var(--text-color) !important;
+}
+.alert-item{
+  color: var(--text-color) !important;
+}
 .scp-logo svg {
   color: #8a0000;
 }

@@ -20,7 +20,6 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.6;
-  
 }
 
 /* Header & Nav */
@@ -133,4 +132,25 @@ footer {
   margin-top: 2rem;
   font-family: var(--font-mono);
   border-top: 5px solid var(--accent-color);
+}
+
+.safe {
+  background-color: #28a745 !important;
+}
+
+.euclid {
+  background-color: #ffc107 !important;
+  color: #000;
+}
+
+.keter {
+  background-color: #dc3545 !important;
+}
+
+.thaumiel {
+  background-color: #007bff !important;
+}
+
+.neutralized {
+  background-color: #6c757d !important;
 }
