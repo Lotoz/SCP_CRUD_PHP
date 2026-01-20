@@ -63,7 +63,7 @@
             SECURE. CONTAIN. PROTECT.
         </div>
     </div>
-    <script src="<?php echo BASE_URL; ?>views/assets/js/controlLogin.js"></script>
+    <script src="views/assets/js/controlLogin.js"></script>
 </body>
 
 </html>
