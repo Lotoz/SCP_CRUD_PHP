@@ -1,20 +1,19 @@
-/**
- * views/CRUD/assets/js/taskCreate.js
- */
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("createTaskForm");
   if (!form) return;
 
   form.addEventListener("submit", function (e) {
+    let isValid = true;
+
     // 1. Obtener elementos
     const descInput = document.getElementById("description");
-    const dateInput = document.getElementById("due_date").value;
+    const dateValue = document.getElementById("due_date").value; // Esto es un String "YYYY-MM-DD"
 
-    // 2. Obtener contenedores de error
+    // 2. Obtener contenedores de error (Debes agregarlos al HTML, ver paso 2 abajo)
     const errorDesc = document.getElementById("errorDesc");
     const errorDate = document.getElementById("errorDate");
 
-    // 3. Función para limpiar errores (DRY)
+    // 3. Funciones de utilidad
     function clearError(el) {
       if (el) {
         el.innerHTML = "";
@@ -35,28 +34,24 @@ document.addEventListener("DOMContentLoaded", function () {
     clearError(errorDesc);
     clearError(errorDate);
 
-    let isValid = true;
-
     // --- VALIDACIÓN 1: Descripción requerida ---
-    if (descInput.value.trim() === "") {
+    if (!descInput.value.trim()) {
       showError(errorDesc, "Description cannot be empty.");
       isValid = false;
     }
 
     // --- VALIDACIÓN 2: Fecha ---
-    if (dateInput && dateInput.value !== "") {
-      let today = new Date.now();
+    if (dateValue) {
+      // Crear fecha de hoy y resetear horas a 00:00:00 para comparación justa
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      if (dateInput.getYear() < today.getYear()) {
-        showError(errorDate, "The target date cannot be in the past.");
-        isValid = false;
-      }
-      if (dateInput.getMonth() < today.getMonth()) {
-        showError(errorDate, "The target date cannot be in the past.");
-        isValid = false;
-      }
+      // Crear fecha del input. 
+      // Truco: Agregamos "T00:00:00" para asegurar que se interprete como local y no UTC
+      // O simplemente usamos replace para asegurar formato YYYY/MM/DD que JS parsea mejor localmente
+      const inputDate = new Date(dateValue + "T00:00:00");
 
-      if (dateInput.getDay() < today.getDay()) {
+      if (inputDate < today) {
         showError(errorDate, "The target date cannot be in the past.");
         isValid = false;
       }

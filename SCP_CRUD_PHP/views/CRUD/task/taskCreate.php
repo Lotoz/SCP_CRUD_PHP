@@ -48,14 +48,15 @@ require_once 'views/templates/header.php';
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Task Directive / Description</label>
-                        <textarea name="description" id="description" class="form-control" rows="4"
-                            placeholder="Enter protocol instructions..." required></textarea>
+                        <textarea name="description" id="description" class="form-control" rows="4" ... required></textarea>
+                        <div id="errorDesc" hidden></div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Target Completion Date (Optional)</label>
-                        <input type="date" id="due_date" name="due_date" class="form-control" style="font-family: var(--font-mono);">
+                        <label class="form-label fw-bold">Target Completion Date</label>
+                        <input type="date" id="due_date" name="due_date" class="form-control" ...>
                         <small class="text-muted">Leave empty if no strict deadline applies.</small>
+                        <div id="errorDate" hidden></div>
                     </div>
 
                     <div class="alert alert-secondary small" style="font-family: var(--font-mono);">
