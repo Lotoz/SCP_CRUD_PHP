@@ -1,30 +1,15 @@
 <?php
+// Aseguramos que el título esté definido
 $pageTitle = "Update Assignment Status";
 require_once 'views/templates/header.php';
+
+$dateValue = '';
+if ($task->getDueDate()) {
+    $dateValue = date('Y-m-d', strtotime($task->getDueDate()));
+}
 ?>
-<style>
-    header nav,
-    .logo-area .security-level {
-        display: none;
-    }
 
-    header {
-        justify-content: center;
-        border-bottom: none;
-    }
-
-    body {
-        padding-bottom: 2rem;
-        background-color: var(--bg-color);
-    }
-
-    .form-section {
-        background: var(--card-bg);
-        padding: 20px;
-        border: 1px solid var(--accent-color);
-    }
-</style>
-
+<link rel="stylesheet" href="views/CRUD/task/assets/styles/style.css">
 <main class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-10">
@@ -33,6 +18,7 @@ require_once 'views/templates/header.php';
                 <h2 class="mb-4" style="font-family: var(--font-mono); color: #ffc107; border-bottom: 2px solid #ffc107;">
                     <i class="fas fa-edit"></i> UPDATE STATUS
                 </h2>
+
                 <?php if (isset($_SESSION['error'])): ?>
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -42,6 +28,7 @@ require_once 'views/templates/header.php';
                         ?>
                     </div>
                 <?php endif; ?>
+
                 <form action="index.php?action=task_update" method="POST" id="createTaskForm">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
@@ -49,22 +36,23 @@ require_once 'views/templates/header.php';
                     <input type="hidden" name="id_usuario" value="<?= $task->getIdUsuario() ?>">
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Task Directive / Description</label>
-                        <textarea name="description" id="description" class="form-control" rows="4" ... required></textarea>
+                        <label class="form-label fw-bold">Task Directive</label>
+                        <textarea name="description" id="description" class="form-control" rows="4" required><?= htmlspecialchars($task->getDescription()) ?></textarea>
                         <div id="errorDesc" hidden></div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Target Completion Date</label>
-                        <input type="date" id="due_date" name="due_date" class="form-control" ...>
-                        <small class="text-muted">Leave empty if no strict deadline applies.</small>
+                        <input type="date" name="due_date" id="due_date" class="form-control"
+                            style="font-family: var(--font-mono);"
+                            value="<?= $dateValue ?>">
                         <div id="errorDate" hidden></div>
                     </div>
 
-
                     <div class="mb-3 form-check p-3" style="background: rgba(0,0,0,0.1); border-radius: 5px; margin-left: 10px;">
                         <input type="checkbox" class="form-check-input" name="completado" id="checkComp"
-                            <?= $task->isCompleted() ? 'checked' : '' ?> style="transform: scale(1.2);">
+                            <?= $task->isCompleted() ? 'checked' : '' ?>
+                            style="transform: scale(1.2);">
                         <label class="form-check-label fw-bold ms-2" for="checkComp" style="color: var(--text-color);">
                             MARK AS COMPLETED
                         </label>
@@ -83,5 +71,6 @@ require_once 'views/templates/header.php';
         </div>
     </div>
 </main>
+
 <script src="views/CRUD/task/assets/js/taskCreate.js"></script>
 <?php require_once 'views/templates/footer.php'; ?>

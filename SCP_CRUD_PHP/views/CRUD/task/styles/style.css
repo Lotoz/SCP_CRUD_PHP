@@ -1,0 +1,21 @@
+header nav,
+.logo-area .security-level {
+    display: none;
+}
+
+header {
+    justify-content: center;
+    border-bottom: none;
+}
+
+body {
+    padding-bottom: 2rem;
+    background-color: var(--bg-color);
+}
+
+.form-section {
+    background: var(--card-bg);
+    padding: 20px;
+    border: 1px solid var(--accent-color);
+}
+

@@ -42,13 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // --- VALIDACIÓN 2: Fecha ---
     if (dateValue) {
-      // Crear fecha de hoy y resetear horas a 00:00:00 para comparación justa
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-
-      // Crear fecha del input. 
-      // Truco: Agregamos "T00:00:00" para asegurar que se interprete como local y no UTC
-      // O simplemente usamos replace para asegurar formato YYYY/MM/DD que JS parsea mejor localmente
       const inputDate = new Date(dateValue + "T00:00:00");
 
       if (inputDate < today) {

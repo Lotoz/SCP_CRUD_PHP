@@ -2,29 +2,8 @@
 $pageTitle = "New Operational Assignment";
 require_once 'views/templates/header.php';
 ?>
-<style>
-    header nav,
-    .logo-area .security-level {
-        display: none;
-    }
 
-    header {
-        justify-content: center;
-        border-bottom: none;
-    }
-
-    body {
-        padding-bottom: 2rem;
-        background-color: var(--bg-color);
-    }
-
-    .form-section {
-        background: var(--card-bg);
-        padding: 20px;
-        border: 1px solid var(--accent-color);
-    }
-</style>
-
+<link rel="stylesheet" href="views/CRUD/task/assets/styles/style.css">
 <main class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-10">
