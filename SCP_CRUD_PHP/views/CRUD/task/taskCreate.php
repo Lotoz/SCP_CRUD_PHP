@@ -54,7 +54,7 @@ require_once 'views/templates/header.php';
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Target Completion Date (Optional)</label>
-                        <input type="date" name="due_date" class="form-control" style="font-family: var(--font-mono);">
+                        <input type="date" id="due_date" name="due_date" class="form-control" style="font-family: var(--font-mono);">
                         <small class="text-muted">Leave empty if no strict deadline applies.</small>
                     </div>
 

@@ -50,12 +50,12 @@ require_once 'views/templates/header.php';
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Task Directive</label>
-                        <textarea name="description" class="form-control" rows="4" required><?= htmlspecialchars($task->getDescription()) ?></textarea>
+                        <textarea name="description" id="description" class="form-control" rows="4" required><?= htmlspecialchars($task->getDescription()) ?></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Target Completion Date</label>
-                        <input type="date" name="due_date" class="form-control"
+                        <input type="date" name="due_date" id="due_date" class="form-control"
                             style="font-family: var(--font-mono);"
                             value="<?= htmlspecialchars($task->getDueDate() ?? '') ?>">
                     </div>
